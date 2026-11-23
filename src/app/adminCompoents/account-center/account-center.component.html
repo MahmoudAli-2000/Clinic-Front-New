@@ -1,11 +1,271 @@
-<section class="cp-page"><header class="page-heading"><div><span class="cp-eyebrow">CAREPOINT / {{section | uppercase}}</span><h1>{{title}}</h1><p>Stay connected to your care, your team and your clinic.</p></div><button *ngIf="section==='notifications'" class="cp-button secondary" (click)="markRead()" [disabled]="busy">Mark all as read</button><button *ngIf="section==='prescriptions'" class="cp-button secondary" (click)="print()">Print prescriptions</button></header>
-<div class="cp-alert error" *ngIf="error" role="alert">{{error}}</div><div class="cp-alert success" *ngIf="success" role="status">{{success}}</div>
-<div class="skeleton-list" *ngIf="loading"><div class="skeleton-row" *ngFor="let n of [1,2,3]"></div></div>
-<ng-container [ngSwitch]="section" *ngIf="!loading">
-<div *ngSwitchCase="'settings'" class="settings-grid"><section class="cp-card settings-panel"><span class="cp-eyebrow">YOUR ACCOUNT</span><h2>Personal information</h2><form #profileForm="ngForm" (ngSubmit)="profileForm.valid && saveSettings('profile')"><label>Full name<input [(ngModel)]="profile['fullName']" name="fullName" required maxlength="150"></label><label>Phone number<input type="tel" [(ngModel)]="profile['phoneNumber']" name="phoneNumber"></label><p class="muted-copy">{{user?.email}} · {{user?.roles?.join(', ')}}</p><button class="cp-button" [disabled]="busy || profileForm.invalid">Save profile</button></form></section><section class="cp-card settings-panel"><span class="cp-eyebrow">SECURITY</span><h2>Change password</h2><form #passwordForm="ngForm" (ngSubmit)="passwordForm.valid && saveSettings('password')"><label>Current password<input type="password" [(ngModel)]="password['currentPassword']" name="currentPassword" required autocomplete="current-password"></label><label>New password<input type="password" [(ngModel)]="password['newPassword']" name="newPassword" required minlength="6" autocomplete="new-password"></label><p class="muted-copy">Use uppercase, lowercase and a number. At least 6 characters.</p><button class="cp-button" [disabled]="busy || passwordForm.invalid">Change password</button></form></section><section class="cp-card settings-panel preference-panel"><span class="cp-eyebrow">YOUR PREFERENCES</span><h2>Keep in touch, your way</h2><p class="muted-copy">Delivery channels depend on the clinic's configured providers. In-app notifications are supported by this backend.</p><form (ngSubmit)="saveSettings('preferences')"><div class="preference-grid"><label *ngFor="let key of preferenceKeys" class="toggle-row"><span>{{label(key)}}</span><input type="checkbox" [(ngModel)]="preferences[key]" [name]="key"></label></div><button class="cp-button" [disabled]="busy">Save preferences</button></form></section></div>
-<div *ngSwitchCase="'notifications'" class="cp-card notifications"><div class="panel-toolbar"><label><input type="checkbox" [(ngModel)]="unreadOnly" (change)="page=1;load()"> Unread only</label><span>{{total}} notifications</span></div><article *ngFor="let row of rows" class="notification-row" [class.unread]="!row['readAtUtc']"><span class="notification-icon"><i class="fas fa-bell"></i></span><div><h2>{{row['title']}}</h2><p>{{row['message']}}</p><small>{{row['createdAtUtc']|date:'medium'}} · {{row['channel']}}</small></div><button class="text-button" *ngIf="!row['readAtUtc']" (click)="markRead(row)">Mark read</button></article><div *ngIf="!rows.length" class="cp-empty"><h2>You're all caught up</h2><p>New clinic updates will appear here.</p></div><div class="panel-toolbar"><button class="cp-button secondary" [disabled]="page<=1" (click)="page=page-1;load()">Previous</button><span>Page {{page}}</span><button class="cp-button secondary" [disabled]="page*10>=total" (click)="page=page+1;load()">Next</button></div></div>
-<div *ngSwitchCase="'time-off'" class="cp-card"><div class="panel-toolbar"><select [(ngModel)]="doctorId" (change)="load()" aria-label="Doctor"><option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">{{doctor['fullName']}}</option></select><a routerLink="/admin/schedules" class="text-button">Schedules & add time off</a></div><div class="table-scroll"><table class="cp-table"><thead><tr><th>Start</th><th>End</th><th>Reason</th><th>Status</th><th></th></tr></thead><tbody><tr *ngFor="let row of rows"><td>{{row['startAtUtc']|date:'medium'}}</td><td>{{row['endAtUtc']|date:'medium'}}</td><td>{{row['reason']||'-'}}</td><td><span class="cp-pill">{{row['status']}}</span></td><td><button *ngIf="desk" class="text-button danger" (click)="removeTimeOff(row['id'])">Delete</button></td></tr></tbody></table></div><div class="cp-empty" *ngIf="!rows.length"><h2>No time off recorded</h2><p>This doctor's calendar has no leave entries.</p></div></div>
-<div *ngSwitchCase="'reviews'"><div class="cp-card panel-toolbar"><select [(ngModel)]="reviewType" (change)="load()" aria-label="Review type"><option value="doctor">Doctor feedback</option><option value="clinic">Clinic feedback</option></select><select *ngIf="reviewType==='doctor'" [(ngModel)]="doctorId" (change)="load()" aria-label="Doctor"><option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">{{doctor['fullName']}}</option></select><select *ngIf="reviewType==='clinic'" [(ngModel)]="clinicId" (change)="load()" aria-label="Clinic"><option *ngFor="let clinic of clinics" [ngValue]="clinic['id']">{{clinic['clinicName']}}</option></select></div><div class="rating-overview"><div *ngFor="let key of ['averageDoctorRating','averageClinicRating','averageStaffRating']" class="cp-card"><span>{{label(key)}}</span><strong>{{stats[key] ? (stats[key]|number:'1.1-1') : '-'}} <small>/ 5</small></strong></div></div><div class="review-grid"><article class="cp-card review" *ngFor="let row of rows"><div class="review-stars">★ {{row['doctorRating'] || row['clinicRating'] || row['staffRating']}} / 5</div><p>{{row['comment'] || 'No written feedback.'}}</p><small>{{row['isAnonymous'] ? 'Anonymous patient' : 'Patient feedback'}} · {{row['reviewedAtUtc']|date:'mediumDate'}}</small></article></div><div class="cp-card cp-empty" *ngIf="!rows.length"><h2>No feedback yet</h2><p>Patients can review completed appointments from their appointment list.</p></div></div>
-<div *ngSwitchCase="'prescriptions'"><form *ngIf="clinical && !user?.doctorId" (ngSubmit)="load()" class="cp-card panel-toolbar"><label>Patient ID <input type="number" min="1" [(ngModel)]="patientId" name="patientId" required></label><button class="cp-button">Load prescriptions</button></form><article class="cp-card prescription" *ngFor="let row of rows"><header><div><span class="cp-eyebrow">PRESCRIPTION #{{row['id']}}</span><h2>Visit #{{row['visitId']}}</h2><p>{{row['issuedAtUtc']|date:'mediumDate'}} · <span class="cp-pill" [attr.data-status]="row['status']">{{row['status']}}</span></p></div><button class="cp-button secondary" *ngIf="clinical && row['status']!=='Completed'" (click)="openStatus(row)">Update status</button></header><div class="table-scroll"><table class="cp-table"><thead><tr><th>Medication</th><th>Dose</th><th>Frequency</th><th>Days</th><th>Route</th><th>Quantity</th><th>Instructions</th></tr></thead><tbody><tr *ngFor="let item of row['items']"><td>{{item.medicationName}}</td><td>{{item.dose || '-'}}</td><td>{{item.frequency || '-'}}</td><td>{{item.durationDays || '-'}}</td><td>{{item.route || '-'}}</td><td>{{item.quantity || '-'}}</td><td>{{item.instructions || '-'}}</td></tr></tbody></table></div><p class="rx-notes">{{row['notes']}}</p></article><div class="cp-card cp-empty" *ngIf="!rows.length"><h2>No prescriptions to display</h2><p>Prescriptions issued by your doctor will appear here.</p></div></div>
-</ng-container>
-<div class="cp-overlay" *ngIf="modal"><section class="cp-modal" role="dialog" aria-modal="true" [attr.aria-label]="modalTitle"><header><h2>{{modalTitle}}</h2><button class="icon-button" (click)="modal=false" aria-label="Close">×</button></header><div *ngIf="error" class="cp-alert error">{{error}}</div><app-entity-form [fields]="fields" [value]="value" [busy]="busy" (save)="saveStatus($event)" (dismiss)="modal=false"></app-entity-form></section></div></section>
+<section class="cp-page">
+  <header class="page-heading">
+    <div>
+      <span class="cp-eyebrow">CAREPOINT / {{ section | uppercase }}</span>
+      <h1>{{ title }}</h1>
+      <p>Stay connected to your care, your team and your clinic.</p>
+    </div>
+    <button
+      *ngIf="section === 'notifications'"
+      class="cp-button secondary"
+      (click)="markRead()"
+      [disabled]="busy"
+    >
+      Mark all as read</button
+    ><button *ngIf="section === 'prescriptions'" class="cp-button secondary" (click)="print()">
+      Print prescriptions
+    </button>
+  </header>
+  <div class="cp-alert error" *ngIf="error" role="alert">{{ error }}</div>
+  <div class="cp-alert success" *ngIf="success" role="status">{{ success }}</div>
+  <div class="skeleton-list" *ngIf="loading">
+    <div class="skeleton-row" *ngFor="let n of [1, 2, 3]"></div>
+  </div>
+  <ng-container [ngSwitch]="section" *ngIf="!loading">
+    <div *ngSwitchCase="'settings'" class="settings-grid">
+      <section class="cp-card settings-panel">
+        <span class="cp-eyebrow">YOUR ACCOUNT</span>
+        <h2>Personal information</h2>
+        <form #profileForm="ngForm" (ngSubmit)="profileForm.valid && saveSettings('profile')">
+          <label
+            >Full name<input
+              [(ngModel)]="profile['fullName']"
+              name="fullName"
+              required
+              maxlength="150" /></label
+          ><label
+            >Phone number<input type="tel" [(ngModel)]="profile['phoneNumber']" name="phoneNumber"
+          /></label>
+          <p class="muted-copy">{{ user?.email }} · {{ user?.roles?.join(', ') }}</p>
+          <button class="cp-button" [disabled]="busy || profileForm.invalid">Save profile</button>
+        </form>
+      </section>
+      <section class="cp-card settings-panel">
+        <span class="cp-eyebrow">SECURITY</span>
+        <h2>Change password</h2>
+        <form #passwordForm="ngForm" (ngSubmit)="passwordForm.valid && saveSettings('password')">
+          <label
+            >Current password<input
+              type="password"
+              [(ngModel)]="password['currentPassword']"
+              name="currentPassword"
+              required
+              autocomplete="current-password" /></label
+          ><label
+            >New password<input
+              type="password"
+              [(ngModel)]="password['newPassword']"
+              name="newPassword"
+              required
+              minlength="6"
+              autocomplete="new-password"
+          /></label>
+          <p class="muted-copy">Use uppercase, lowercase and a number. At least 6 characters.</p>
+          <button class="cp-button" [disabled]="busy || passwordForm.invalid">Change password</button>
+        </form>
+      </section>
+      <section class="cp-card settings-panel preference-panel">
+        <span class="cp-eyebrow">YOUR PREFERENCES</span>
+        <h2>Keep in touch, your way</h2>
+        <p class="muted-copy">
+          Delivery channels depend on the clinic's configured providers. In-app notifications are supported by
+          this backend.
+        </p>
+        <form (ngSubmit)="saveSettings('preferences')">
+          <div class="preference-grid">
+            <label *ngFor="let key of preferenceKeys" class="toggle-row"
+              ><span>{{ label(key) }}</span
+              ><input type="checkbox" [(ngModel)]="preferences[key]" [name]="key"
+            /></label>
+          </div>
+          <button class="cp-button" [disabled]="busy">Save preferences</button>
+        </form>
+      </section>
+    </div>
+    <div *ngSwitchCase="'notifications'" class="cp-card notifications">
+      <div class="panel-toolbar">
+        <label
+          ><input type="checkbox" [(ngModel)]="unreadOnly" (change)="page = 1; load()" /> Unread only</label
+        ><span>{{ total }} notifications</span>
+      </div>
+      <article *ngFor="let row of rows" class="notification-row" [class.unread]="!row['readAtUtc']">
+        <span class="notification-icon"><i class="fas fa-bell"></i></span>
+        <div>
+          <h2>{{ row['title'] }}</h2>
+          <p>{{ row['message'] }}</p>
+          <small>{{ row['createdAtUtc'] | date: 'medium' }} · {{ row['channel'] }}</small>
+        </div>
+        <button class="text-button" *ngIf="!row['readAtUtc']" (click)="markRead(row)">Mark read</button>
+      </article>
+      <div *ngIf="!rows.length" class="cp-empty">
+        <h2>You're all caught up</h2>
+        <p>New clinic updates will appear here.</p>
+      </div>
+      <div class="panel-toolbar">
+        <button class="cp-button secondary" [disabled]="page <= 1" (click)="page = page - 1; load()">
+          Previous</button
+        ><span>Page {{ page }}</span
+        ><button
+          class="cp-button secondary"
+          [disabled]="page * 10 >= total"
+          (click)="page = page + 1; load()"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+    <div *ngSwitchCase="'time-off'" class="cp-card">
+      <div class="panel-toolbar">
+        <select [(ngModel)]="doctorId" (change)="load()" aria-label="Doctor">
+          <option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">
+            {{ doctor['fullName'] }}
+          </option></select
+        ><a routerLink="/admin/schedules" class="text-button">Schedules & add time off</a>
+      </div>
+      <div class="table-scroll">
+        <table class="cp-table">
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>End</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of rows">
+              <td>{{ row['startAtUtc'] | date: 'medium' }}</td>
+              <td>{{ row['endAtUtc'] | date: 'medium' }}</td>
+              <td>{{ row['reason'] || '-' }}</td>
+              <td>
+                <span class="cp-pill">{{ row['status'] }}</span>
+              </td>
+              <td>
+                <button *ngIf="desk" class="text-button danger" (click)="removeTimeOff(row['id'])">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cp-empty" *ngIf="!rows.length">
+        <h2>No time off recorded</h2>
+        <p>This doctor's calendar has no leave entries.</p>
+      </div>
+    </div>
+    <div *ngSwitchCase="'reviews'">
+      <div class="cp-card panel-toolbar">
+        <select [(ngModel)]="reviewType" (change)="load()" aria-label="Review type">
+          <option value="doctor">Doctor feedback</option>
+          <option value="clinic">Clinic feedback</option></select
+        ><select *ngIf="reviewType === 'doctor'" [(ngModel)]="doctorId" (change)="load()" aria-label="Doctor">
+          <option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">
+            {{ doctor['fullName'] }}
+          </option></select
+        ><select *ngIf="reviewType === 'clinic'" [(ngModel)]="clinicId" (change)="load()" aria-label="Clinic">
+          <option *ngFor="let clinic of clinics" [ngValue]="clinic['id']">{{ clinic['clinicName'] }}</option>
+        </select>
+      </div>
+      <div class="rating-overview">
+        <div
+          *ngFor="let key of ['averageDoctorRating', 'averageClinicRating', 'averageStaffRating']"
+          class="cp-card"
+        >
+          <span>{{ label(key) }}</span
+          ><strong>{{ stats[key] ? (stats[key] | number: '1.1-1') : '-' }} <small>/ 5</small></strong>
+        </div>
+      </div>
+      <div class="review-grid">
+        <article class="cp-card review" *ngFor="let row of rows">
+          <div class="review-stars">
+            ★ {{ row['doctorRating'] || row['clinicRating'] || row['staffRating'] }} / 5
+          </div>
+          <p>{{ row['comment'] || 'No written feedback.' }}</p>
+          <small
+            >{{ row['isAnonymous'] ? 'Anonymous patient' : 'Patient feedback' }} ·
+            {{ row['reviewedAtUtc'] | date: 'mediumDate' }}</small
+          >
+        </article>
+      </div>
+      <div class="cp-card cp-empty" *ngIf="!rows.length">
+        <h2>No feedback yet</h2>
+        <p>Patients can review completed appointments from their appointment list.</p>
+      </div>
+    </div>
+    <div *ngSwitchCase="'prescriptions'">
+      <form *ngIf="clinical && !user?.doctorId" (ngSubmit)="load()" class="cp-card panel-toolbar">
+        <label
+          >Patient ID <input type="number" min="1" [(ngModel)]="patientId" name="patientId" required /></label
+        ><button class="cp-button">Load prescriptions</button>
+      </form>
+      <article class="cp-card prescription" *ngFor="let row of rows">
+        <header>
+          <div>
+            <span class="cp-eyebrow">PRESCRIPTION #{{ row['id'] }}</span>
+            <h2>Visit #{{ row['visitId'] }}</h2>
+            <p>
+              {{ row['issuedAtUtc'] | date: 'mediumDate' }} ·
+              <span class="cp-pill" [attr.data-status]="row['status']">{{ row['status'] }}</span>
+            </p>
+          </div>
+          <button
+            class="cp-button secondary"
+            *ngIf="clinical && row['status'] !== 'Completed'"
+            (click)="openStatus(row)"
+          >
+            Update status
+          </button>
+        </header>
+        <div class="table-scroll">
+          <table class="cp-table">
+            <thead>
+              <tr>
+                <th>Medication</th>
+                <th>Dose</th>
+                <th>Frequency</th>
+                <th>Days</th>
+                <th>Route</th>
+                <th>Quantity</th>
+                <th>Instructions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of row['items']">
+                <td>{{ item.medicationName }}</td>
+                <td>{{ item.dose || '-' }}</td>
+                <td>{{ item.frequency || '-' }}</td>
+                <td>{{ item.durationDays || '-' }}</td>
+                <td>{{ item.route || '-' }}</td>
+                <td>{{ item.quantity || '-' }}</td>
+                <td>{{ item.instructions || '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="rx-notes">{{ row['notes'] }}</p>
+      </article>
+      <div class="cp-card cp-empty" *ngIf="!rows.length">
+        <h2>No prescriptions to display</h2>
+        <p>Prescriptions issued by your doctor will appear here.</p>
+      </div>
+    </div>
+  </ng-container>
+  <div class="cp-overlay" *ngIf="modal">
+    <section class="cp-modal" role="dialog" aria-modal="true" [attr.aria-label]="modalTitle">
+      <header>
+        <h2>{{ modalTitle }}</h2>
+        <button class="icon-button" (click)="modal = false" aria-label="Close">×</button>
+      </header>
+      <div *ngIf="error" class="cp-alert error">{{ error }}</div>
+      <app-entity-form
+        [fields]="fields"
+        [value]="value"
+        [busy]="busy"
+        (save)="saveStatus($event)"
+        (dismiss)="modal = false"
+      ></app-entity-form>
+    </section>
+  </div>
+</section>

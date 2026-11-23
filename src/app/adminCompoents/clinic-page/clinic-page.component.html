@@ -1,24 +1,299 @@
 <section class="cp-page">
-  <header class="page-heading"><div><span class="cp-eyebrow">CAREPOINT / WORKSPACE</span><h1>{{config.title}}<span class="count-bubble">{{total}}</span></h1><p>{{config.description}}</p></div><button class="cp-button" *ngIf="canWrite && section !== 'users'" (click)="openForm()" [disabled]="busy"><i class="fas fa-plus"></i> New {{config.singular}}</button></header>
-  <div *ngIf="error && !modal" class="cp-alert error" role="alert">{{error}} <button (click)="load()">Try again</button></div>
-  <div *ngIf="success" class="cp-alert success" role="status">{{success}}<button (click)="success=''" aria-label="Dismiss message">×</button></div>
+  <header class="page-heading">
+    <div>
+      <span class="cp-eyebrow">CAREPOINT / WORKSPACE</span>
+      <h1>
+        {{ config.title }}<span class="count-bubble">{{ total }}</span>
+      </h1>
+      <p>{{ config.description }}</p>
+    </div>
+    <button class="cp-button" *ngIf="canWrite && section !== 'users'" (click)="openForm()" [disabled]="busy">
+      <i class="fas fa-plus"></i> New {{ config.singular }}
+    </button>
+  </header>
+  <div *ngIf="error && !modal" class="cp-alert error" role="alert">
+    {{ error }} <button (click)="load()">Try again</button>
+  </div>
+  <div *ngIf="success" class="cp-alert success" role="status">
+    {{ success }}<button (click)="success = ''" aria-label="Dismiss message">×</button>
+  </div>
   <div class="cp-card">
     <form class="list-toolbar" (ngSubmit)="filter()">
-      <div class="search-box" *ngIf="section !== 'schedules'"><i class="fas fa-search"></i><input [(ngModel)]="search" name="search" [placeholder]="'Search '+config.title.toLowerCase()" aria-label="Search records"><button type="submit" class="cp-button secondary">Search</button></div>
-      <select *ngIf="section === 'appointments'" [(ngModel)]="statusFilter" name="status" (change)="filter()" aria-label="Appointment status"><option value="">All statuses</option><option *ngFor="let status of ['Scheduled','Confirmed','CheckedIn','InProgress','Completed','Cancelled','NoShow','Rescheduled']" [value]="status">{{status}}</option></select>
-      <input *ngIf="section === 'appointments'" type="date" [(ngModel)]="dateFilter" name="date" (change)="filter()" aria-label="Appointment date">
-      <select *ngIf="section === 'schedules'" [(ngModel)]="doctorId" name="doctor" (change)="load()" aria-label="Select doctor"><option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">{{doctor['fullName']}}</option></select>
-      <button class="icon-button" type="button" (click)="load()" aria-label="Refresh records" [disabled]="loading"><i class="fas fa-rotate"></i></button>
+      <div class="search-box" *ngIf="section !== 'schedules'">
+        <i class="fas fa-search"></i
+        ><input
+          [(ngModel)]="search"
+          name="search"
+          [placeholder]="'Search ' + config.title.toLowerCase()"
+          aria-label="Search records"
+        /><button type="submit" class="cp-button secondary">Search</button>
+      </div>
+      <select
+        *ngIf="section === 'appointments'"
+        [(ngModel)]="statusFilter"
+        name="status"
+        (change)="filter()"
+        aria-label="Appointment status"
+      >
+        <option value="">All statuses</option>
+        <option
+          *ngFor="
+            let status of [
+              'Scheduled',
+              'Confirmed',
+              'CheckedIn',
+              'InProgress',
+              'Completed',
+              'Cancelled',
+              'NoShow',
+              'Rescheduled',
+            ]
+          "
+          [value]="status"
+        >
+          {{ status }}
+        </option>
+      </select>
+      <input
+        *ngIf="section === 'appointments'"
+        type="date"
+        [(ngModel)]="dateFilter"
+        name="date"
+        (change)="filter()"
+        aria-label="Appointment date"
+      />
+      <select
+        *ngIf="section === 'schedules'"
+        [(ngModel)]="doctorId"
+        name="doctor"
+        (change)="load()"
+        aria-label="Select doctor"
+      >
+        <option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">{{ doctor['fullName'] }}</option>
+      </select>
+      <button
+        class="icon-button"
+        type="button"
+        (click)="load()"
+        aria-label="Refresh records"
+        [disabled]="loading"
+      >
+        <i class="fas fa-rotate"></i>
+      </button>
     </form>
-    <div class="skeleton-list" *ngIf="loading" aria-label="Loading records"><div *ngFor="let n of [1,2,3,4,5]" class="skeleton-row"></div></div>
-    <div class="table-scroll" *ngIf="!loading && rows.length"><table class="cp-table"><thead><tr><th *ngFor="let column of config.columns">{{column.label}}</th><th class="actions-column">Actions</th></tr></thead><tbody><tr *ngFor="let row of rows; trackBy: track"><td *ngFor="let column of config.columns;let first=first" [class.name-cell]="first"><ng-container [ngSwitch]="column.type"><span *ngSwitchCase="'status'" class="cp-pill" [attr.data-status]="row[column.key]">{{display(row,column.key)}}</span><span *ngSwitchCase="'boolean'" class="cp-pill" [attr.data-status]="row[column.key] ? 'Active' : 'Inactive'">{{row[column.key] ? 'Active' : 'Inactive'}}</span><span *ngSwitchCase="'date'">{{row[column.key] | date:'MMM d, y, h:mm a'}}</span><span *ngSwitchDefault>{{display(row,column.key)}}</span></ng-container></td>
-      <td><div class="row-actions"><button *ngIf="section!=='schedules'" (click)="showDetail(row)" class="text-button">View</button><button *ngIf="canWrite && !['appointments','users'].includes(section)" (click)="openForm(row)" class="text-button">Edit</button><button *ngIf="canWrite && ['patients','clinics','staff','medications','users'].includes(section)" (click)="openAction('status',row)" class="text-button">Status</button><button *ngIf="canWrite && ['schedules','services'].includes(section)" (click)="remove(row)" class="text-button danger">Delete</button><button *ngIf="section==='doctors' && canWrite" (click)="openAction('assignment',row)" class="text-button">Assign clinic</button><button *ngIf="section==='users' && canWrite" (click)="openAction('roles',row)" class="text-button">Roles</button>
-      <ng-container *ngIf="section==='appointments'"><ng-container *ngFor="let action of ['confirm','checkin','start-visit','reschedule','complete','no-show','cancel','review']"><button *ngIf="canAppointment(action,row)" (click)="openAction(action,row)" class="text-button" [class.danger]="action==='cancel'">{{label(action)}}</button></ng-container><a *ngIf="row['visitId'] && has('Admin','Manager','Doctor','Nurse')" [routerLink]="['/admin/clinical',row['visitId']]" class="text-button">Visit chart</a></ng-container></div></td>
-    </tr></tbody></table></div>
-    <div class="cp-empty" *ngIf="!loading && !rows.length"><span class="empty-icon"><i [class]="'fas '+config.icon"></i></span><h2>{{error ? 'Data is unavailable' : 'A clear view starts here'}}</h2><p>{{error ? 'Please check the API connection and try again.' : 'No matching records. Try another search or add your first record.'}}</p></div>
-    <footer class="pagination-bar" *ngIf="section!=='schedules'"><span>Showing {{rangeStart}}-{{rangeEnd}} of {{total}}</span><div><button class="icon-button" (click)="changePage(-1)" [disabled]="page<=1 || loading" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button><span>Page {{page}} of {{pages}}</span><button class="icon-button" (click)="changePage(1)" [disabled]="page>=pages || loading" aria-label="Next page"><i class="fas fa-chevron-right"></i></button></div></footer>
+    <div class="skeleton-list" *ngIf="loading" aria-label="Loading records">
+      <div *ngFor="let n of [1, 2, 3, 4, 5]" class="skeleton-row"></div>
+    </div>
+    <div class="table-scroll" *ngIf="!loading && rows.length">
+      <table class="cp-table">
+        <thead>
+          <tr>
+            <th *ngFor="let column of config.columns">{{ column.label }}</th>
+            <th class="actions-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rows; trackBy: track">
+            <td *ngFor="let column of config.columns; let first = first" [class.name-cell]="first">
+              <ng-container [ngSwitch]="column.type"
+                ><span *ngSwitchCase="'status'" class="cp-pill" [attr.data-status]="row[column.key]">{{
+                  display(row, column.key)
+                }}</span
+                ><span
+                  *ngSwitchCase="'boolean'"
+                  class="cp-pill"
+                  [attr.data-status]="row[column.key] ? 'Active' : 'Inactive'"
+                  >{{ row[column.key] ? 'Active' : 'Inactive' }}</span
+                ><span *ngSwitchCase="'date'">{{ row[column.key] | date: 'MMM d, y, h:mm a' }}</span
+                ><span *ngSwitchDefault>{{ display(row, column.key) }}</span></ng-container
+              >
+            </td>
+            <td>
+              <div class="row-actions">
+                <button *ngIf="section !== 'schedules'" (click)="showDetail(row)" class="text-button">
+                  View</button
+                ><button
+                  *ngIf="canWrite && !['appointments', 'users'].includes(section)"
+                  (click)="openForm(row)"
+                  class="text-button"
+                >
+                  Edit</button
+                ><button
+                  *ngIf="
+                    canWrite && ['patients', 'clinics', 'staff', 'medications', 'users'].includes(section)
+                  "
+                  (click)="openAction('status', row)"
+                  class="text-button"
+                >
+                  Status</button
+                ><button
+                  *ngIf="canWrite && ['schedules', 'services'].includes(section)"
+                  (click)="remove(row)"
+                  class="text-button danger"
+                >
+                  Delete</button
+                ><button
+                  *ngIf="section === 'doctors' && canWrite"
+                  (click)="openAction('assignment', row)"
+                  class="text-button"
+                >
+                  Assign clinic</button
+                ><button
+                  *ngIf="section === 'users' && canWrite"
+                  (click)="openAction('roles', row)"
+                  class="text-button"
+                >
+                  Roles
+                </button>
+                <ng-container *ngIf="section === 'appointments'"
+                  ><ng-container
+                    *ngFor="
+                      let action of [
+                        'confirm',
+                        'checkin',
+                        'start-visit',
+                        'reschedule',
+                        'complete',
+                        'no-show',
+                        'cancel',
+                        'review',
+                      ]
+                    "
+                    ><button
+                      *ngIf="canAppointment(action, row)"
+                      (click)="openAction(action, row)"
+                      class="text-button"
+                      [class.danger]="action === 'cancel'"
+                    >
+                      {{ label(action) }}
+                    </button></ng-container
+                  ><a
+                    *ngIf="row['visitId'] && has('Admin', 'Manager', 'Doctor', 'Nurse')"
+                    [routerLink]="['/admin/clinical', row['visitId']]"
+                    class="text-button"
+                    >Visit chart</a
+                  ></ng-container
+                >
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cp-empty" *ngIf="!loading && !rows.length">
+      <span class="empty-icon"><i [class]="'fas ' + config.icon"></i></span>
+      <h2>{{ error ? 'Data is unavailable' : 'A clear view starts here' }}</h2>
+      <p>
+        {{
+          error
+            ? 'Please check the API connection and try again.'
+            : 'No matching records. Try another search or add your first record.'
+        }}
+      </p>
+    </div>
+    <footer class="pagination-bar" *ngIf="section !== 'schedules'">
+      <span>Showing {{ rangeStart }}-{{ rangeEnd }} of {{ total }}</span>
+      <div>
+        <button
+          class="icon-button"
+          (click)="changePage(-1)"
+          [disabled]="page <= 1 || loading"
+          aria-label="Previous page"
+        >
+          <i class="fas fa-chevron-left"></i></button
+        ><span>Page {{ page }} of {{ pages }}</span
+        ><button
+          class="icon-button"
+          (click)="changePage(1)"
+          [disabled]="page >= pages || loading"
+          aria-label="Next page"
+        >
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </footer>
   </div>
-  <div *ngIf="section==='schedules'" class="cp-card availability-panel"><div><span class="cp-eyebrow">PLAN AHEAD</span><h2>Find an available time</h2><p>Availability uses UTC calendar dates. Slots display in your local timezone.</p></div><form (ngSubmit)="availability()" class="inline-form"><input type="date" [(ngModel)]="availabilityDate" name="availableDate" required aria-label="Availability date"><button class="cp-button" [disabled]="busy || !doctorId || !availabilityDate">Check availability</button><button *ngIf="canWrite" class="cp-button secondary" type="button" (click)="openAction('timeoff',{})">Add time off</button><a class="text-button" routerLink="/admin/time-off">Manage time off</a></form><div class="slot-grid"><div class="slot" *ngFor="let slot of slots"><strong>{{slot['startAtUtc']|date:'h:mm a'}} - {{slot['endAtUtc']|date:'h:mm a'}}</strong><span>{{slot['clinicName']}}</span></div></div></div>
-  <div class="cp-overlay" *ngIf="modal" (click)="!busy && (modal=false)"><section role="dialog" aria-modal="true" [attr.aria-label]="modalTitle" class="cp-modal" (click)="$event.stopPropagation()"><header><div><span class="cp-eyebrow">{{config.title}}</span><h2>{{modalTitle}}</h2></div><button class="icon-button" aria-label="Close form" (click)="modal=false" [disabled]="busy">×</button></header><div class="cp-alert error" *ngIf="error" role="alert">{{error}}</div><p *ngIf="!fields.length" class="confirm-copy">This changes the selected record. Do you want to continue?</p><app-entity-form [fields]="fields" [value]="formValue" [busy]="busy" (save)="save($event)" (dismiss)="modal=false"></app-entity-form></section></div>
-  <div class="cp-overlay" *ngIf="detail" (click)="detail=null"><section class="cp-modal" role="dialog" aria-modal="true" aria-label="Record details" (click)="$event.stopPropagation()"><header><h2>{{config.singular | titlecase}} details</h2><button class="icon-button" (click)="detail=null" aria-label="Close details">×</button></header><dl class="detail-grid"><div *ngFor="let entry of detailEntries()"><dt>{{label(entry[0])}}</dt><dd>{{entry[1] === true ? 'Yes' : entry[1] === false ? 'No' : entry[1]}}</dd></div></dl><ng-container *ngIf="detail['clinics']"><h3>Clinic assignments</h3><div class="assignment-row" *ngFor="let clinic of detail['clinics']"><span>{{clinic.clinicName}} · {{clinic.consultationFee ?? 'Default fee'}}</span><button class="text-button danger" *ngIf="canWrite" (click)="unassign(clinic.id)">Remove</button></div></ng-container></section></div>
+  <div *ngIf="section === 'schedules'" class="cp-card availability-panel">
+    <div>
+      <span class="cp-eyebrow">PLAN AHEAD</span>
+      <h2>Find an available time</h2>
+      <p>Availability uses UTC calendar dates. Slots display in your local timezone.</p>
+    </div>
+    <form (ngSubmit)="availability()" class="inline-form">
+      <input
+        type="date"
+        [(ngModel)]="availabilityDate"
+        name="availableDate"
+        required
+        aria-label="Availability date"
+      /><button class="cp-button" [disabled]="busy || !doctorId || !availabilityDate">
+        Check availability</button
+      ><button *ngIf="canWrite" class="cp-button secondary" type="button" (click)="openAction('timeoff', {})">
+        Add time off</button
+      ><a class="text-button" routerLink="/admin/time-off">Manage time off</a>
+    </form>
+    <div class="slot-grid">
+      <div class="slot" *ngFor="let slot of slots">
+        <strong>{{ slot['startAtUtc'] | date: 'h:mm a' }} - {{ slot['endAtUtc'] | date: 'h:mm a' }}</strong
+        ><span>{{ slot['clinicName'] }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="cp-overlay" *ngIf="modal" (click)="!busy && (modal = false)">
+    <section
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="modalTitle"
+      class="cp-modal"
+      (click)="$event.stopPropagation()"
+    >
+      <header>
+        <div>
+          <span class="cp-eyebrow">{{ config.title }}</span>
+          <h2>{{ modalTitle }}</h2>
+        </div>
+        <button class="icon-button" aria-label="Close form" (click)="modal = false" [disabled]="busy">
+          ×
+        </button>
+      </header>
+      <div class="cp-alert error" *ngIf="error" role="alert">{{ error }}</div>
+      <p *ngIf="!fields.length" class="confirm-copy">
+        This changes the selected record. Do you want to continue?
+      </p>
+      <app-entity-form
+        [fields]="fields"
+        [value]="formValue"
+        [busy]="busy"
+        (save)="save($event)"
+        (dismiss)="modal = false"
+      ></app-entity-form>
+    </section>
+  </div>
+  <div class="cp-overlay" *ngIf="detail" (click)="detail = null">
+    <section
+      class="cp-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Record details"
+      (click)="$event.stopPropagation()"
+    >
+      <header>
+        <h2>{{ config.singular | titlecase }} details</h2>
+        <button class="icon-button" (click)="detail = null" aria-label="Close details">×</button>
+      </header>
+      <dl class="detail-grid">
+        <div *ngFor="let entry of detailEntries()">
+          <dt>{{ label(entry[0]) }}</dt>
+          <dd>{{ entry[1] === true ? 'Yes' : entry[1] === false ? 'No' : entry[1] }}</dd>
+        </div>
+      </dl>
+      <ng-container *ngIf="detail['clinics']"
+        ><h3>Clinic assignments</h3>
+        <div class="assignment-row" *ngFor="let clinic of detail['clinics']">
+          <span>{{ clinic.clinicName }} · {{ clinic.consultationFee ?? 'Default fee' }}</span
+          ><button class="text-button danger" *ngIf="canWrite" (click)="unassign(clinic.id)">Remove</button>
+        </div></ng-container
+      >
+    </section>
+  </div>
 </section>

@@ -1,1 +1,73 @@
-.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.field{display:flex;flex-direction:column;gap:8px;color:#34475b;font-size:13px;font-weight:600;min-width:0}.field.full{grid-column:1/-1}.field b{color:#d75959}.field input,.field select,.field textarea{border:1px solid #d9e2e9;border-radius:10px;padding:12px;background:#fff;color:#20364b;width:100%;font:inherit;font-weight:400;min-width:0}.field input:focus,.field select:focus,.field textarea:focus{outline:3px solid #d9f2ee;border-color:#1b8b7c}.field input.ng-invalid.ng-touched{border-color:#c94848}.field small{font-weight:400;color:#718293;font-size:11px}.field .check-input{width:20px;height:20px;accent-color:#168577}.form-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:28px;padding-top:20px;border-top:1px solid #edf0f3}.validation-note{color:#a12e2e;font-size:13px;margin-top:16px}@media(max-width:540px){.field-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #34475b;
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 0;
+}
+.field.full {
+  grid-column: 1/-1;
+}
+.field b {
+  color: #d75959;
+}
+.field input,
+.field select,
+.field textarea {
+  border: 1px solid #d9e2e9;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+  color: #20364b;
+  width: 100%;
+  font: inherit;
+  font-weight: 400;
+  min-width: 0;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 3px solid #d9f2ee;
+  border-color: #1b8b7c;
+}
+.field input.ng-invalid.ng-touched {
+  border-color: #c94848;
+}
+.field small {
+  font-weight: 400;
+  color: #718293;
+  font-size: 11px;
+}
+.field .check-input {
+  width: 20px;
+  height: 20px;
+  accent-color: #168577;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #edf0f3;
+}
+.validation-note {
+  color: #a12e2e;
+  font-size: 13px;
+  margin-top: 16px;
+}
+@media (max-width: 540px) {
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+  .field.full {
+    grid-column: auto;
+  }
+}

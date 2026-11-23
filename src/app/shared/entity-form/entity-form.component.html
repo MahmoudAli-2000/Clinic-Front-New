@@ -3,18 +3,56 @@
     <label *ngFor="let field of fields" [class.full]="field.type === 'textarea'" class="field">
       <span>{{ field.label }} <b *ngIf="field.required" aria-hidden="true">*</b></span>
       <ng-container [ngSwitch]="field.type">
-        <select *ngSwitchCase="'select'" [(ngModel)]="model[field.key]" [name]="field.key" [required]="!!field.required">
-          <option [ngValue]="undefined">Choose {{field.label.toLowerCase()}}</option>
-          <option *ngFor="let option of field.options" [ngValue]="option.value">{{option.label}}</option>
+        <select
+          *ngSwitchCase="'select'"
+          [(ngModel)]="model[field.key]"
+          [name]="field.key"
+          [required]="!!field.required"
+        >
+          <option [ngValue]="undefined">Choose {{ field.label.toLowerCase() }}</option>
+          <option *ngFor="let option of field.options" [ngValue]="option.value">{{ option.label }}</option>
         </select>
-        <textarea *ngSwitchCase="'textarea'" [(ngModel)]="model[field.key]" [name]="field.key" [required]="!!field.required" rows="3"></textarea>
-        <input *ngSwitchCase="'checkbox'" type="checkbox" [(ngModel)]="model[field.key]" [name]="field.key" class="check-input">
-        <input *ngSwitchCase="'file'" type="file" accept="image/jpeg,image/png,image/webp" (change)="file($event, field.key)">
-        <input *ngSwitchDefault [type]="field.type === 'roles' ? 'text' : field.type || 'text'" [(ngModel)]="model[field.key]" [name]="field.key" [required]="!!field.required" [min]="field.min ?? null" [max]="field.max ?? null" [attr.step]="field.type === 'number' ? 'any' : null" [autocomplete]="field.type === 'password' ? 'new-password' : 'off'">
+        <textarea
+          *ngSwitchCase="'textarea'"
+          [(ngModel)]="model[field.key]"
+          [name]="field.key"
+          [required]="!!field.required"
+          rows="3"
+        ></textarea>
+        <input
+          *ngSwitchCase="'checkbox'"
+          type="checkbox"
+          [(ngModel)]="model[field.key]"
+          [name]="field.key"
+          class="check-input"
+        />
+        <input
+          *ngSwitchCase="'file'"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          (change)="file($event, field.key)"
+        />
+        <input
+          *ngSwitchDefault
+          [type]="field.type === 'roles' ? 'text' : field.type || 'text'"
+          [(ngModel)]="model[field.key]"
+          [name]="field.key"
+          [required]="!!field.required"
+          [min]="field.min ?? null"
+          [max]="field.max ?? null"
+          [attr.step]="field.type === 'number' ? 'any' : null"
+          [autocomplete]="field.type === 'password' ? 'new-password' : 'off'"
+        />
       </ng-container>
-      <small *ngIf="field.hint">{{field.hint}}</small>
+      <small *ngIf="field.hint">{{ field.hint }}</small>
     </label>
   </div>
-  <p class="validation-note" *ngIf="form.submitted && form.invalid" role="alert">Please complete the required fields with valid values.</p>
-  <div class="form-actions"><button type="button" class="cp-button secondary" (click)="dismiss.emit()" [disabled]="busy">Cancel</button><button type="submit" class="cp-button" [disabled]="busy">{{busy ? 'Saving...' : submitLabel}}</button></div>
+  <p class="validation-note" *ngIf="form.submitted && form.invalid" role="alert">
+    Please complete the required fields with valid values.
+  </p>
+  <div class="form-actions">
+    <button type="button" class="cp-button secondary" (click)="dismiss.emit()" [disabled]="busy">
+      Cancel</button
+    ><button type="submit" class="cp-button" [disabled]="busy">{{ busy ? 'Saving...' : submitLabel }}</button>
+  </div>
 </form>

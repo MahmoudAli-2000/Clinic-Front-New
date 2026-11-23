@@ -31,23 +31,71 @@
     </article>
     <article class="summary-card" *ngIf="role === 'Patient'">
       <span class="summary-icon teal"><i class="fas fa-notes-medical"></i></span>
-      <div><small>Visit history</small><strong>{{ personalVisitCount ?? '-' }}</strong></div>
+      <div>
+        <small>Visit history</small><strong>{{ personalVisitCount ?? '-' }}</strong>
+      </div>
     </article>
     <article class="summary-card" *ngIf="role === 'Patient' || role === 'Doctor'">
       <span class="summary-icon violet"><i class="fas fa-prescription"></i></span>
-      <div><small>Prescriptions</small><strong>{{ personalPrescriptionCount ?? '-' }}</strong></div>
+      <div>
+        <small>Prescriptions</small><strong>{{ personalPrescriptionCount ?? '-' }}</strong>
+      </div>
     </article>
     <article class="summary-card">
       <span class="summary-icon amber"><i class="fas fa-bell"></i></span>
-      <div><small>Unread notifications</small><strong>{{ unreadNotifications ?? '-' }}</strong></div>
+      <div>
+        <small>Unread notifications</small><strong>{{ unreadNotifications ?? '-' }}</strong>
+      </div>
     </article>
   </div>
 
-  <div class="cp-alert error" *ngIf="dataWarning">Some live data could not be loaded. Missing values are shown as a dash, not zero.</div>
+  <div class="cp-alert error" *ngIf="dataWarning">
+    Some live data could not be loaded. Missing values are shown as a dash, not zero.
+  </div>
   <div class="dashboard-panels" *ngIf="!isLoading && !loadError">
-    <section class="cp-card appointment-preview"><header><div><span class="cp-eyebrow">YOUR CARE AT A GLANCE</span><h2>Appointment activity</h2></div><a routerLink="/admin/appointments" class="text-button">View all <i class="fas fa-arrow-right"></i></a></header>
-    <div class="preview-row" *ngFor="let item of upcoming"><span class="date-tile"><strong>{{item['scheduledStartAtUtc']|date:'dd'}}</strong><small>{{item['scheduledStartAtUtc']|date:'MMM'}}</small></span><div><strong>{{role==='Patient'?item['doctorName']:item['patientName']}}</strong><small>{{item['clinicName']}} · {{item['scheduledStartAtUtc']|date:'h:mm a'}}</small></div><span class="cp-pill" [attr.data-status]="item['status']">{{item['status']}}</span></div><p *ngIf="!upcoming.length" class="panel-empty">No appointment activity to display.</p></section>
-    <section class="cp-card update-preview"><header><div><span class="cp-eyebrow">STAY CONNECTED</span><h2>Latest updates</h2></div><a routerLink="/admin/notifications" class="text-button">See all</a></header><article class="update-row" *ngFor="let notification of recentNotifications"><span><i class="fas fa-bell"></i></span><div><strong>{{notification['title']}}</strong><p>{{notification['message']}}</p><small>{{notification['createdAtUtc']|date:'MMM d, h:mm a'}}</small></div></article><p class="panel-empty" *ngIf="!recentNotifications.length">You're all caught up. Updates will appear here.</p></section>
+    <section class="cp-card appointment-preview">
+      <header>
+        <div>
+          <span class="cp-eyebrow">YOUR CARE AT A GLANCE</span>
+          <h2>Appointment activity</h2>
+        </div>
+        <a routerLink="/admin/appointments" class="text-button"
+          >View all <i class="fas fa-arrow-right"></i
+        ></a>
+      </header>
+      <div class="preview-row" *ngFor="let item of upcoming">
+        <span class="date-tile"
+          ><strong>{{ item['scheduledStartAtUtc'] | date: 'dd' }}</strong
+          ><small>{{ item['scheduledStartAtUtc'] | date: 'MMM' }}</small></span
+        >
+        <div>
+          <strong>{{ role === 'Patient' ? item['doctorName'] : item['patientName'] }}</strong
+          ><small>{{ item['clinicName'] }} · {{ item['scheduledStartAtUtc'] | date: 'h:mm a' }}</small>
+        </div>
+        <span class="cp-pill" [attr.data-status]="item['status']">{{ item['status'] }}</span>
+      </div>
+      <p *ngIf="!upcoming.length" class="panel-empty">No appointment activity to display.</p>
+    </section>
+    <section class="cp-card update-preview">
+      <header>
+        <div>
+          <span class="cp-eyebrow">STAY CONNECTED</span>
+          <h2>Latest updates</h2>
+        </div>
+        <a routerLink="/admin/notifications" class="text-button">See all</a>
+      </header>
+      <article class="update-row" *ngFor="let notification of recentNotifications">
+        <span><i class="fas fa-bell"></i></span>
+        <div>
+          <strong>{{ notification['title'] }}</strong>
+          <p>{{ notification['message'] }}</p>
+          <small>{{ notification['createdAtUtc'] | date: 'MMM d, h:mm a' }}</small>
+        </div>
+      </article>
+      <p class="panel-empty" *ngIf="!recentNotifications.length">
+        You're all caught up. Updates will appear here.
+      </p>
+    </section>
   </div>
   <div class="section-heading">
     <div>
@@ -72,6 +120,9 @@
 
   <div class="privacy-note">
     <span><i class="fas fa-lock"></i></span>
-    <p><strong>Your workspace is role-aware.</strong> Information and tools are shown according to your clinic access.</p>
+    <p>
+      <strong>Your workspace is role-aware.</strong> Information and tools are shown according to your clinic
+      access.
+    </p>
   </div>
 </section>

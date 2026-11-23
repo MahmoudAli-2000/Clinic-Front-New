@@ -3,11 +3,11 @@
     class="sidebar-scrim"
     [class.visible]="isMenuOpen"
     aria-label="Close navigation"
-    (click)="closeMenu()">
-  </button>
+    (click)="closeMenu()"
+  ></button>
 
   <aside class="workspace-sidebar" [class.open]="isMenuOpen">
-    <a class="brand" [routerLink]="rolePrefix+'/dashboard'" (click)="closeMenu()">
+    <a class="brand" [routerLink]="rolePrefix + '/dashboard'" (click)="closeMenu()">
       <span class="brand-mark"><i class="fas fa-heartbeat"></i></span>
       <span>
         <strong>CarePoint</strong>
@@ -22,7 +22,8 @@
         [routerLink]="item.path"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
-        (click)="closeMenu()">
+        (click)="closeMenu()"
+      >
         <i [ngClass]="'fas ' + item.icon"></i>
         <span>{{ item.label }}</span>
       </a>
@@ -45,7 +46,12 @@
         <strong>{{ roleLabel }} workspace</strong>
       </div>
       <div class="header-actions">
-        <a class="header-notifications" [routerLink]="rolePrefix+'/notifications'" aria-label="Notifications"><i class="fas fa-bell"></i></a>
+        <a
+          class="header-notifications"
+          [routerLink]="rolePrefix + '/notifications'"
+          aria-label="Notifications"
+          ><i class="fas fa-bell"></i
+        ></a>
         <div class="user-summary">
           <span class="user-avatar">{{ initials }}</span>
           <span class="user-copy">

@@ -1,38 +1,262 @@
 import { FormField, ResourceConfig } from '../interfaces/workspace';
-const admin = ['Admin','Manager'];
-const desk = [...admin,'Receptionist'];
-const txt = (key:string,label:string,required=false,type='text'):FormField => ({key,label,required,type});
-const select = (key:string,label:string,values:string[]):FormField => ({key,label,type:'select',options:values.map(value=>({value,label:value}))});
-const lookup = (key:string,label:string,source:string):FormField => ({key,label,type:'select',required:true,lookup:source});
-const image = txt('imageFile','Profile image',false,'file');
-const contact = [txt('phone','Phone',false,'tel'),txt('email','Email',false,'email')];
-const name = [txt('firstName','First name',true),txt('lastName','Last name',true)];
-const active = txt('isActive','Active',false,'checkbox');
-const status = select('status','Status',['Active','Inactive','Suspended','Deceased']);
-export const RESOURCES: Record<string,ResourceConfig> = {
- patients:{endpoint:'Patients',title:'Patients',singular:'patient',icon:'fa-user-injured',description:'A connected view of every patient and their care.',writeRoles:desk,multipart:true,
- columns:[{key:'name',label:'Patient'},{key:'patientNo',label:'Patient no.'},{key:'phone',label:'Phone'},{key:'email',label:'Email'},{key:'status',label:'Status',type:'status'}],
- fields:[...name,...contact,txt('dateOfBirth','Date of birth',false,'date'),select('gender','Gender',['Male','Female']),txt('addressLine1','Address'),txt('addressLine2','Address line 2'),txt('city','City'),txt('emergencyContactName','Emergency contact'),txt('emergencyContactPhone','Emergency phone',false,'tel'),status,image,txt('createAccount','Create sign-in account',false,'checkbox'),txt('password','Initial password',false,'password')]},
- doctors:{endpoint:'Doctors',title:'Doctors',singular:'doctor',icon:'fa-user-doctor',description:'The people behind exceptional patient care.',writeRoles:admin,multipart:true,
- columns:[{key:'fullName',label:'Doctor'},{key:'specialtyName',label:'Specialty'},{key:'licenseNo',label:'License'},{key:'consultationDurationMinutes',label:'Minutes / visit'},{key:'isActive',label:'Status',type:'boolean'}],
- fields:[lookup('staffId','Staff member','Staffs'),lookup('specialtyId','Specialty','Specialties'),txt('licenseNo','License number',true),{...txt('consultationDurationMinutes','Consultation minutes',true,'number'),min:5,max:240},txt('defaultConsultationFee','Consultation fee',false,'number'),txt('bio','Biography',false,'textarea'),active,image]},
- clinics:{endpoint:'Clinics',title:'Clinics',singular:'clinic',icon:'fa-hospital',description:'Manage locations, contact details and service hours.',writeRoles:admin,multipart:true,
- columns:[{key:'clinicName',label:'Clinic'},{key:'clinicCode',label:'Code'},{key:'city',label:'City'},{key:'phone',label:'Phone'},{key:'isActive',label:'Status',type:'boolean'}],
- fields:[txt('clinicCode','Clinic code',true),txt('clinicName','Clinic name',true),...contact,txt('addressLine1','Address'),txt('addressLine2','Address line 2'),txt('city','City'),txt('country','Country'),txt('workingHoursNotes','Working hours',false,'textarea'),active,image]},
- services:{endpoint:'Specialties',title:'Specialties',singular:'specialty',icon:'fa-stethoscope',description:'Organize the services your care team provides.',writeRoles:admin,multipart:true,
- columns:[{key:'specialtyName',label:'Specialty'},{key:'description',label:'Description'},{key:'isActive',label:'Status',type:'boolean'}],fields:[txt('specialtyName','Specialty name',true),txt('description','Description',false,'textarea'),active,image]},
- staff:{endpoint:'Staffs',title:'Staff',singular:'staff member',icon:'fa-user-nurse',description:'Your clinic team, organized and connected.',writeRoles:admin,multipart:true,
- columns:[{key:'name',label:'Team member'},{key:'employeeNo',label:'Employee no.'},{key:'jobTitle',label:'Job title'},{key:'roles',label:'Roles'},{key:'status',label:'Status',type:'status'}],
- fields:[...name,...contact,{...lookup('primaryClinicId','Primary clinic','Clinics'),required:false},txt('jobTitle','Job title'),txt('hireDate','Hire date',false,'date'),{...txt('roles','Roles (comma separated)',false,'roles'),hint:'Doctor, Nurse, Receptionist, Manager or Admin'},status,image,txt('createAccount','Create sign-in account',false,'checkbox'),txt('password','Initial password',false,'password')]},
- medications:{endpoint:'Medications',title:'Medications',singular:'medication',icon:'fa-capsules',description:'A reliable medication catalog for every prescription.',writeRoles:[...admin,'Doctor','Nurse'],multipart:true,
- columns:[{key:'genericName',label:'Medication'},{key:'brandName',label:'Brand'},{key:'strength',label:'Strength'},{key:'dosageForm',label:'Form'},{key:'isActive',label:'Status',type:'boolean'}],
- fields:[txt('genericName','Generic name',true),txt('brandName','Brand name'),txt('medicationCode','Medication code'),txt('dosageForm','Dosage form'),txt('strength','Strength'),txt('unit','Unit'),active,image]},
- appointments:{endpoint:'Appointments',title:'Appointments',singular:'appointment',icon:'fa-calendar-check',description:'Keep the day moving, from booking to follow-up.',writeRoles:[...desk,'Doctor','Nurse'],
- columns:[{key:'patientName',label:'Patient'},{key:'doctorName',label:'Doctor'},{key:'clinicName',label:'Clinic'},{key:'scheduledStartAtUtc',label:'Date & time',type:'date'},{key:'status',label:'Status',type:'status'}],
- fields:[lookup('patientId','Patient','Patients'),lookup('doctorClinicId','Doctor & clinic','assignments'),txt('scheduledStartAtUtc','Start time (your local time)',true,'datetime-local'),txt('scheduledEndAtUtc','End time (optional)',false,'datetime-local'),select('bookingSource','Booking source',['Admin','Receptionist','Doctor','Phone','Website']),txt('reason','Reason',false,'textarea'),txt('notes','Notes',false,'textarea')]},
- schedules:{endpoint:'Schedules',title:'Schedules',singular:'schedule',icon:'fa-clock',description:'Build predictable shifts and clear availability.',writeRoles:desk,
- columns:[{key:'dayOfWeek',label:'Day',type:'day'},{key:'startTime',label:'Start (UTC)'},{key:'endTime',label:'End (UTC)'},{key:'slotDurationMinutes',label:'Slot minutes'},{key:'isActive',label:'Status',type:'boolean'}],
- fields:[lookup('doctorClinicId','Doctor & clinic','assignments'),{key:'dayOfWeek',label:'Day',required:true,type:'select',options:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((label,i)=>({value:i+1,label}))},txt('startTime','Start time (UTC)',true,'time'),txt('endTime','End time (UTC)',true,'time'),{...txt('slotDurationMinutes','Slot minutes',true,'number'),min:5,max:240},txt('effectiveFrom','Effective from',false,'date'),txt('effectiveTo','Effective to',false,'date'),active]},
- users:{endpoint:'Users',title:'User accounts',singular:'user',icon:'fa-users-gear',description:'Control account access and role assignments.',writeRoles:admin,
- columns:[{key:'fullName',label:'Account'},{key:'email',label:'Email'},{key:'isActive',label:'Access',type:'boolean'}],fields:[]}
+const admin = ['Admin', 'Manager'];
+const desk = [...admin, 'Receptionist'];
+const txt = (key: string, label: string, required = false, type = 'text'): FormField => ({
+  key,
+  label,
+  required,
+  type,
+});
+const select = (key: string, label: string, values: string[]): FormField => ({
+  key,
+  label,
+  type: 'select',
+  options: values.map((value) => ({ value, label: value })),
+});
+const lookup = (key: string, label: string, source: string): FormField => ({
+  key,
+  label,
+  type: 'select',
+  required: true,
+  lookup: source,
+});
+const image = txt('imageFile', 'Profile image', false, 'file');
+const contact = [txt('phone', 'Phone', false, 'tel'), txt('email', 'Email', false, 'email')];
+const name = [txt('firstName', 'First name', true), txt('lastName', 'Last name', true)];
+const active = txt('isActive', 'Active', false, 'checkbox');
+const status = select('status', 'Status', ['Active', 'Inactive', 'Suspended', 'Deceased']);
+export const RESOURCES: Record<string, ResourceConfig> = {
+  patients: {
+    endpoint: 'Patients',
+    title: 'Patients',
+    singular: 'patient',
+    icon: 'fa-user-injured',
+    description: 'A connected view of every patient and their care.',
+    writeRoles: desk,
+    multipart: true,
+    columns: [
+      { key: 'name', label: 'Patient' },
+      { key: 'patientNo', label: 'Patient no.' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'email', label: 'Email' },
+      { key: 'status', label: 'Status', type: 'status' },
+    ],
+    fields: [
+      ...name,
+      ...contact,
+      txt('dateOfBirth', 'Date of birth', false, 'date'),
+      select('gender', 'Gender', ['Male', 'Female']),
+      txt('addressLine1', 'Address'),
+      txt('addressLine2', 'Address line 2'),
+      txt('city', 'City'),
+      txt('emergencyContactName', 'Emergency contact'),
+      txt('emergencyContactPhone', 'Emergency phone', false, 'tel'),
+      status,
+      image,
+      txt('createAccount', 'Create sign-in account', false, 'checkbox'),
+      txt('password', 'Initial password', false, 'password'),
+    ],
+  },
+  doctors: {
+    endpoint: 'Doctors',
+    title: 'Doctors',
+    singular: 'doctor',
+    icon: 'fa-user-doctor',
+    description: 'The people behind exceptional patient care.',
+    writeRoles: admin,
+    multipart: true,
+    columns: [
+      { key: 'fullName', label: 'Doctor' },
+      { key: 'specialtyName', label: 'Specialty' },
+      { key: 'licenseNo', label: 'License' },
+      { key: 'consultationDurationMinutes', label: 'Minutes / visit' },
+      { key: 'isActive', label: 'Status', type: 'boolean' },
+    ],
+    fields: [
+      lookup('staffId', 'Staff member', 'Staffs'),
+      lookup('specialtyId', 'Specialty', 'Specialties'),
+      txt('licenseNo', 'License number', true),
+      { ...txt('consultationDurationMinutes', 'Consultation minutes', true, 'number'), min: 5, max: 240 },
+      txt('defaultConsultationFee', 'Consultation fee', false, 'number'),
+      txt('bio', 'Biography', false, 'textarea'),
+      active,
+      image,
+    ],
+  },
+  clinics: {
+    endpoint: 'Clinics',
+    title: 'Clinics',
+    singular: 'clinic',
+    icon: 'fa-hospital',
+    description: 'Manage locations, contact details and service hours.',
+    writeRoles: admin,
+    multipart: true,
+    columns: [
+      { key: 'clinicName', label: 'Clinic' },
+      { key: 'clinicCode', label: 'Code' },
+      { key: 'city', label: 'City' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'isActive', label: 'Status', type: 'boolean' },
+    ],
+    fields: [
+      txt('clinicCode', 'Clinic code', true),
+      txt('clinicName', 'Clinic name', true),
+      ...contact,
+      txt('addressLine1', 'Address'),
+      txt('addressLine2', 'Address line 2'),
+      txt('city', 'City'),
+      txt('country', 'Country'),
+      txt('workingHoursNotes', 'Working hours', false, 'textarea'),
+      active,
+      image,
+    ],
+  },
+  services: {
+    endpoint: 'Specialties',
+    title: 'Specialties',
+    singular: 'specialty',
+    icon: 'fa-stethoscope',
+    description: 'Organize the services your care team provides.',
+    writeRoles: admin,
+    multipart: true,
+    columns: [
+      { key: 'specialtyName', label: 'Specialty' },
+      { key: 'description', label: 'Description' },
+      { key: 'isActive', label: 'Status', type: 'boolean' },
+    ],
+    fields: [
+      txt('specialtyName', 'Specialty name', true),
+      txt('description', 'Description', false, 'textarea'),
+      active,
+      image,
+    ],
+  },
+  staff: {
+    endpoint: 'Staffs',
+    title: 'Staff',
+    singular: 'staff member',
+    icon: 'fa-user-nurse',
+    description: 'Your clinic team, organized and connected.',
+    writeRoles: admin,
+    multipart: true,
+    columns: [
+      { key: 'name', label: 'Team member' },
+      { key: 'employeeNo', label: 'Employee no.' },
+      { key: 'jobTitle', label: 'Job title' },
+      { key: 'roles', label: 'Roles' },
+      { key: 'status', label: 'Status', type: 'status' },
+    ],
+    fields: [
+      ...name,
+      ...contact,
+      { ...lookup('primaryClinicId', 'Primary clinic', 'Clinics'), required: false },
+      txt('jobTitle', 'Job title'),
+      txt('hireDate', 'Hire date', false, 'date'),
+      {
+        ...txt('roles', 'Roles (comma separated)', false, 'roles'),
+        hint: 'Doctor, Nurse, Receptionist, Manager or Admin',
+      },
+      status,
+      image,
+      txt('createAccount', 'Create sign-in account', false, 'checkbox'),
+      txt('password', 'Initial password', false, 'password'),
+    ],
+  },
+  medications: {
+    endpoint: 'Medications',
+    title: 'Medications',
+    singular: 'medication',
+    icon: 'fa-capsules',
+    description: 'A reliable medication catalog for every prescription.',
+    writeRoles: [...admin, 'Doctor', 'Nurse'],
+    multipart: true,
+    columns: [
+      { key: 'genericName', label: 'Medication' },
+      { key: 'brandName', label: 'Brand' },
+      { key: 'strength', label: 'Strength' },
+      { key: 'dosageForm', label: 'Form' },
+      { key: 'isActive', label: 'Status', type: 'boolean' },
+    ],
+    fields: [
+      txt('genericName', 'Generic name', true),
+      txt('brandName', 'Brand name'),
+      txt('medicationCode', 'Medication code'),
+      txt('dosageForm', 'Dosage form'),
+      txt('strength', 'Strength'),
+      txt('unit', 'Unit'),
+      active,
+      image,
+    ],
+  },
+  appointments: {
+    endpoint: 'Appointments',
+    title: 'Appointments',
+    singular: 'appointment',
+    icon: 'fa-calendar-check',
+    description: 'Keep the day moving, from booking to follow-up.',
+    writeRoles: [...desk, 'Doctor', 'Nurse'],
+    columns: [
+      { key: 'patientName', label: 'Patient' },
+      { key: 'doctorName', label: 'Doctor' },
+      { key: 'clinicName', label: 'Clinic' },
+      { key: 'scheduledStartAtUtc', label: 'Date & time', type: 'date' },
+      { key: 'status', label: 'Status', type: 'status' },
+    ],
+    fields: [
+      lookup('patientId', 'Patient', 'Patients'),
+      lookup('doctorClinicId', 'Doctor & clinic', 'assignments'),
+      txt('scheduledStartAtUtc', 'Start time (your local time)', true, 'datetime-local'),
+      txt('scheduledEndAtUtc', 'End time (optional)', false, 'datetime-local'),
+      select('bookingSource', 'Booking source', ['Admin', 'Receptionist', 'Doctor', 'Phone', 'Website']),
+      txt('reason', 'Reason', false, 'textarea'),
+      txt('notes', 'Notes', false, 'textarea'),
+    ],
+  },
+  schedules: {
+    endpoint: 'Schedules',
+    title: 'Schedules',
+    singular: 'schedule',
+    icon: 'fa-clock',
+    description: 'Build predictable shifts and clear availability.',
+    writeRoles: desk,
+    columns: [
+      { key: 'dayOfWeek', label: 'Day', type: 'day' },
+      { key: 'startTime', label: 'Start (UTC)' },
+      { key: 'endTime', label: 'End (UTC)' },
+      { key: 'slotDurationMinutes', label: 'Slot minutes' },
+      { key: 'isActive', label: 'Status', type: 'boolean' },
+    ],
+    fields: [
+      lookup('doctorClinicId', 'Doctor & clinic', 'assignments'),
+      {
+        key: 'dayOfWeek',
+        label: 'Day',
+        required: true,
+        type: 'select',
+        options: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(
+          (label, i) => ({ value: i + 1, label })
+        ),
+      },
+      txt('startTime', 'Start time (UTC)', true, 'time'),
+      txt('endTime', 'End time (UTC)', true, 'time'),
+      { ...txt('slotDurationMinutes', 'Slot minutes', true, 'number'), min: 5, max: 240 },
+      txt('effectiveFrom', 'Effective from', false, 'date'),
+      txt('effectiveTo', 'Effective to', false, 'date'),
+      active,
+    ],
+  },
+  users: {
+    endpoint: 'Users',
+    title: 'User accounts',
+    singular: 'user',
+    icon: 'fa-users-gear',
+    description: 'Control account access and role assignments.',
+    writeRoles: admin,
+    columns: [
+      { key: 'fullName', label: 'Account' },
+      { key: 'email', label: 'Email' },
+      { key: 'isActive', label: 'Access', type: 'boolean' },
+    ],
+    fields: [],
+  },
 };

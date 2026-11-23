@@ -1,11 +1,197 @@
-<section class="cp-page"><header class="page-heading"><div><span class="cp-eyebrow">CAREPOINT / PATIENT CARE</span><h1>{{visit ? 'Visit chart #'+visit['id'] : 'Care history'}}</h1><p>A connected record of visits, clinical notes and treatment.</p></div><a routerLink="/admin/appointments" class="cp-button secondary">Appointments</a></header>
-<div class="cp-alert error" *ngIf="error" role="alert">{{error}}</div><div class="cp-alert success" *ngIf="success" role="status">{{success}}</div>
-<div class="cp-card history-search" *ngIf="!user?.patientId"><form (ngSubmit)="visit=null;history()"><label>Find patient history<input type="number" min="1" name="patient" [(ngModel)]="patientId" placeholder="Patient ID" required></label><button class="cp-button">Open history</button></form></div>
-<div *ngIf="loading" class="skeleton-list"><div class="skeleton-row" *ngFor="let n of [1,2,3]"></div></div>
-<ng-container *ngIf="!loading && visit"><div class="cp-card chart-summary"><div><span class="cp-eyebrow">VISIT SUMMARY</span><h2>{{visit['chiefComplaint'] || 'Clinical consultation'}}</h2><p>Patient #{{visit['patientId']}} · Appointment #{{visit['appointmentId']}} · {{visit['visitStartAtUtc'] | date:'medium'}}</p><span class="cp-pill" [attr.data-status]="visit['status']">{{visit['status']}}</span></div><div class="chart-actions" *ngIf="clinical"><button class="cp-button secondary" (click)="open('notes')">Edit notes</button><button class="cp-button secondary" (click)="prescription()" *ngIf="doctor">Prescribe</button><button class="cp-button" (click)="open('complete')" *ngIf="visit['status']!=='Completed'">Complete visit</button></div></div>
-<div class="cp-card note-panel"><h2>Clinical notes</h2><p class="preserve-lines">{{visit['doctorNotes'] || 'No clinical notes recorded.'}}</p></div>
-<div class="chart-grid"><section class="cp-card"><header class="section-heading"><h2>Vital signs</h2><button class="text-button" *ngIf="clinical" (click)="open('vitals')">+ Record vitals</button></header><div class="clinical-record" *ngFor="let vital of visit['vitalSigns']"><dl><div *ngFor="let entry of entries(vital)"><dt>{{label(entry[0])}}</dt><dd>{{entry[1]}}</dd></div></dl><div *ngIf="clinical" class="row-actions"><button class="text-button" (click)="open('vitals',vital)">Edit</button><button class="text-button danger" (click)="remove('vitals',vital.id)">Delete</button></div></div><p class="muted-copy" *ngIf="!visit['vitalSigns']?.length">No vital signs recorded yet.</p></section><section class="cp-card"><header class="section-heading"><h2>Diagnoses</h2><button class="text-button" *ngIf="clinical" (click)="open('diagnoses')">+ Add diagnosis</button></header><div class="clinical-record" *ngFor="let diagnosis of visit['diagnoses']"><strong>{{diagnosis.diagnosisName}}</strong><p>{{diagnosis.diagnosisCode}} · {{diagnosis.diagnosisType}}</p><p>{{diagnosis.notes}}</p><div class="row-actions" *ngIf="clinical"><button class="text-button" (click)="open('diagnoses',diagnosis)">Edit</button><button class="text-button danger" (click)="remove('diagnoses',diagnosis.id)">Delete</button></div></div><p class="muted-copy" *ngIf="!visit['diagnoses']?.length">No diagnoses recorded yet.</p></section></div></ng-container>
-<ng-container *ngIf="!loading && !visit"><div class="cp-card history-list"><div *ngFor="let item of visits" class="history-item"><div><span class="cp-pill" [attr.data-status]="item['status']">{{item['status']}}</span><h2>{{item['chiefComplaint'] || 'Consultation #'+item['id']}}</h2><p>{{item['visitStartAtUtc']|date:'medium'}} · Appointment #{{item['appointmentId']}}</p></div><button class="cp-button secondary" (click)="openVisit(item['id'])">View chart</button></div><div class="cp-empty" *ngIf="!visits.length"><span class="empty-icon"><i class="fas fa-notes-medical"></i></span><h2>No visits to display</h2><p>Your visit history will appear here after your first consultation.</p></div></div><div class="cp-card prescription-history" *ngIf="prescriptions.length"><h2>Prescription history</h2><div class="clinical-record" *ngFor="let rx of prescriptions"><strong>Prescription #{{rx['id']}} · {{rx['status']}}</strong><p>{{rx['issuedAtUtc']|date:'mediumDate'}}</p><ul><li *ngFor="let item of rx['items']">{{item.medicationName}} · {{item.dose}} · {{item.frequency}} · {{item.durationDays}} days</li></ul></div></div></ng-container>
-<div class="cp-overlay" *ngIf="modal" (click)="!busy&&(modal=false)"><section class="cp-modal" role="dialog" aria-modal="true" [attr.aria-label]="label(action)" (click)="$event.stopPropagation()"><header><h2>{{label(action)}}</h2><button class="icon-button" (click)="modal=false" [disabled]="busy" aria-label="Close form">×</button></header><p *ngIf="action==='complete'">Completing the visit also completes its appointment.</p><div class="cp-alert error" *ngIf="error">{{error}}</div><app-entity-form [fields]="fields" [value]="value" [busy]="busy" (save)="save($event)" (dismiss)="modal=false"></app-entity-form></section></div>
-<div class="cp-overlay" *ngIf="prescribe"><section class="cp-modal prescription-modal" role="dialog" aria-modal="true" aria-label="Issue prescription"><header><h2>Issue prescription</h2><button class="icon-button" (click)="prescribe=false" aria-label="Close prescription">×</button></header><div class="cp-alert error" *ngIf="error">{{error}}</div><form #rxForm="ngForm" (ngSubmit)="rxForm.valid && savePrescription()"><div class="rx-item" *ngFor="let item of items;let i=index"><label>Medication<select [(ngModel)]="item['medicationId']" [name]="'medication'+i" required><option [ngValue]="undefined">Select medication</option><option *ngFor="let med of medications" [ngValue]="med['id']">{{med['genericName']}} {{med['strength']}}</option></select></label><label>Dose<input [(ngModel)]="item['dose']" [name]="'dose'+i"></label><label>Frequency<input [(ngModel)]="item['frequency']" [name]="'frequency'+i"></label><label>Days<input type="number" min="1" [(ngModel)]="item['durationDays']" [name]="'days'+i"></label><label>Route<input [(ngModel)]="item['route']" [name]="'route'+i"></label><label>Quantity<input type="number" min="0" [(ngModel)]="item['quantity']" [name]="'quantity'+i"></label><label>Instructions<input [(ngModel)]="item['instructions']" [name]="'instructions'+i"></label><button *ngIf="items.length>1" class="text-button danger" type="button" (click)="items.splice(i,1)">Remove</button></div><button class="text-button" type="button" (click)="addItem()">+ Add medication</button><label class="rx-notes">Notes<textarea [(ngModel)]="prescriptionNotes" name="notes"></textarea></label><div class="form-actions"><button class="cp-button" [disabled]="busy || rxForm.invalid">{{busy ? 'Issuing...' : 'Issue prescription'}}</button></div></form></section></div>
+<section class="cp-page">
+  <header class="page-heading">
+    <div>
+      <span class="cp-eyebrow">CAREPOINT / PATIENT CARE</span>
+      <h1>{{ visit ? 'Visit chart #' + visit['id'] : 'Care history' }}</h1>
+      <p>A connected record of visits, clinical notes and treatment.</p>
+    </div>
+    <a routerLink="/admin/appointments" class="cp-button secondary">Appointments</a>
+  </header>
+  <div class="cp-alert error" *ngIf="error" role="alert">{{ error }}</div>
+  <div class="cp-alert success" *ngIf="success" role="status">{{ success }}</div>
+  <div class="cp-card history-search" *ngIf="!user?.patientId">
+    <form (ngSubmit)="visit = null; history()">
+      <label
+        >Find patient history<input
+          type="number"
+          min="1"
+          name="patient"
+          [(ngModel)]="patientId"
+          placeholder="Patient ID"
+          required /></label
+      ><button class="cp-button">Open history</button>
+    </form>
+  </div>
+  <div *ngIf="loading" class="skeleton-list">
+    <div class="skeleton-row" *ngFor="let n of [1, 2, 3]"></div>
+  </div>
+  <ng-container *ngIf="!loading && visit"
+    ><div class="cp-card chart-summary">
+      <div>
+        <span class="cp-eyebrow">VISIT SUMMARY</span>
+        <h2>{{ visit['chiefComplaint'] || 'Clinical consultation' }}</h2>
+        <p>
+          Patient #{{ visit['patientId'] }} · Appointment #{{ visit['appointmentId'] }} ·
+          {{ visit['visitStartAtUtc'] | date: 'medium' }}
+        </p>
+        <span class="cp-pill" [attr.data-status]="visit['status']">{{ visit['status'] }}</span>
+      </div>
+      <div class="chart-actions" *ngIf="clinical">
+        <button class="cp-button secondary" (click)="open('notes')">Edit notes</button
+        ><button class="cp-button secondary" (click)="prescription()" *ngIf="doctor">Prescribe</button
+        ><button class="cp-button" (click)="open('complete')" *ngIf="visit['status'] !== 'Completed'">
+          Complete visit
+        </button>
+      </div>
+    </div>
+    <div class="cp-card note-panel">
+      <h2>Clinical notes</h2>
+      <p class="preserve-lines">{{ visit['doctorNotes'] || 'No clinical notes recorded.' }}</p>
+    </div>
+    <div class="chart-grid">
+      <section class="cp-card">
+        <header class="section-heading">
+          <h2>Vital signs</h2>
+          <button class="text-button" *ngIf="clinical" (click)="open('vitals')">+ Record vitals</button>
+        </header>
+        <div class="clinical-record" *ngFor="let vital of visit['vitalSigns']">
+          <dl>
+            <div *ngFor="let entry of entries(vital)">
+              <dt>{{ label(entry[0]) }}</dt>
+              <dd>{{ entry[1] }}</dd>
+            </div>
+          </dl>
+          <div *ngIf="clinical" class="row-actions">
+            <button class="text-button" (click)="open('vitals', vital)">Edit</button
+            ><button class="text-button danger" (click)="remove('vitals', vital.id)">Delete</button>
+          </div>
+        </div>
+        <p class="muted-copy" *ngIf="!visit['vitalSigns']?.length">No vital signs recorded yet.</p>
+      </section>
+      <section class="cp-card">
+        <header class="section-heading">
+          <h2>Diagnoses</h2>
+          <button class="text-button" *ngIf="clinical" (click)="open('diagnoses')">+ Add diagnosis</button>
+        </header>
+        <div class="clinical-record" *ngFor="let diagnosis of visit['diagnoses']">
+          <strong>{{ diagnosis.diagnosisName }}</strong>
+          <p>{{ diagnosis.diagnosisCode }} · {{ diagnosis.diagnosisType }}</p>
+          <p>{{ diagnosis.notes }}</p>
+          <div class="row-actions" *ngIf="clinical">
+            <button class="text-button" (click)="open('diagnoses', diagnosis)">Edit</button
+            ><button class="text-button danger" (click)="remove('diagnoses', diagnosis.id)">Delete</button>
+          </div>
+        </div>
+        <p class="muted-copy" *ngIf="!visit['diagnoses']?.length">No diagnoses recorded yet.</p>
+      </section>
+    </div></ng-container
+  >
+  <ng-container *ngIf="!loading && !visit"
+    ><div class="cp-card history-list">
+      <div *ngFor="let item of visits" class="history-item">
+        <div>
+          <span class="cp-pill" [attr.data-status]="item['status']">{{ item['status'] }}</span>
+          <h2>{{ item['chiefComplaint'] || 'Consultation #' + item['id'] }}</h2>
+          <p>{{ item['visitStartAtUtc'] | date: 'medium' }} · Appointment #{{ item['appointmentId'] }}</p>
+        </div>
+        <button class="cp-button secondary" (click)="openVisit(item['id'])">View chart</button>
+      </div>
+      <div class="cp-empty" *ngIf="!visits.length">
+        <span class="empty-icon"><i class="fas fa-notes-medical"></i></span>
+        <h2>No visits to display</h2>
+        <p>Your visit history will appear here after your first consultation.</p>
+      </div>
+    </div>
+    <div class="cp-card prescription-history" *ngIf="prescriptions.length">
+      <h2>Prescription history</h2>
+      <div class="clinical-record" *ngFor="let rx of prescriptions">
+        <strong>Prescription #{{ rx['id'] }} · {{ rx['status'] }}</strong>
+        <p>{{ rx['issuedAtUtc'] | date: 'mediumDate' }}</p>
+        <ul>
+          <li *ngFor="let item of rx['items']">
+            {{ item.medicationName }} · {{ item.dose }} · {{ item.frequency }} · {{ item.durationDays }} days
+          </li>
+        </ul>
+      </div>
+    </div></ng-container
+  >
+  <div class="cp-overlay" *ngIf="modal" (click)="!busy && (modal = false)">
+    <section
+      class="cp-modal"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="label(action)"
+      (click)="$event.stopPropagation()"
+    >
+      <header>
+        <h2>{{ label(action) }}</h2>
+        <button class="icon-button" (click)="modal = false" [disabled]="busy" aria-label="Close form">
+          ×
+        </button>
+      </header>
+      <p *ngIf="action === 'complete'">Completing the visit also completes its appointment.</p>
+      <div class="cp-alert error" *ngIf="error">{{ error }}</div>
+      <app-entity-form
+        [fields]="fields"
+        [value]="value"
+        [busy]="busy"
+        (save)="save($event)"
+        (dismiss)="modal = false"
+      ></app-entity-form>
+    </section>
+  </div>
+  <div class="cp-overlay" *ngIf="prescribe">
+    <section
+      class="cp-modal prescription-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Issue prescription"
+    >
+      <header>
+        <h2>Issue prescription</h2>
+        <button class="icon-button" (click)="prescribe = false" aria-label="Close prescription">×</button>
+      </header>
+      <div class="cp-alert error" *ngIf="error">{{ error }}</div>
+      <form #rxForm="ngForm" (ngSubmit)="rxForm.valid && savePrescription()">
+        <div class="rx-item" *ngFor="let item of items; let i = index">
+          <label
+            >Medication<select [(ngModel)]="item['medicationId']" [name]="'medication' + i" required>
+              <option [ngValue]="undefined">Select medication</option>
+              <option *ngFor="let med of medications" [ngValue]="med['id']">
+                {{ med['genericName'] }} {{ med['strength'] }}
+              </option>
+            </select></label
+          ><label>Dose<input [(ngModel)]="item['dose']" [name]="'dose' + i" /></label
+          ><label>Frequency<input [(ngModel)]="item['frequency']" [name]="'frequency' + i" /></label
+          ><label
+            >Days<input type="number" min="1" [(ngModel)]="item['durationDays']" [name]="'days' + i" /></label
+          ><label>Route<input [(ngModel)]="item['route']" [name]="'route' + i" /></label
+          ><label
+            >Quantity<input
+              type="number"
+              min="0"
+              [(ngModel)]="item['quantity']"
+              [name]="'quantity' + i" /></label
+          ><label>Instructions<input [(ngModel)]="item['instructions']" [name]="'instructions' + i" /></label
+          ><button
+            *ngIf="items.length > 1"
+            class="text-button danger"
+            type="button"
+            (click)="items.splice(i, 1)"
+          >
+            Remove
+          </button>
+        </div>
+        <button class="text-button" type="button" (click)="addItem()">+ Add medication</button
+        ><label class="rx-notes"
+          >Notes<textarea [(ngModel)]="prescriptionNotes" name="notes"></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="cp-button" [disabled]="busy || rxForm.invalid">
+            {{ busy ? 'Issuing...' : 'Issue prescription' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
 </section>

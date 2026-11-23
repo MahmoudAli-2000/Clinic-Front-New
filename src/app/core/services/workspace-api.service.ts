@@ -11,18 +11,22 @@ export class WorkspaceApiService {
     }
     return this.http.get<T>(`/api/${path}`, { params });
   }
-  post<T = any>(path: string, body: any) { return this.http.post<T>(`/api/${path}`, body); }
-  put<T = any>(path: string, body: any, query: RecordData = {}) {
-    return this.http.put<T>(`/api/${path}`, body, {params: query});
+  post<T = any>(path: string, body: any) {
+    return this.http.post<T>(`/api/${path}`, body);
   }
-  delete(path: string) { return this.http.delete(`/api/${path}`); }
+  put<T = any>(path: string, body: any, query: RecordData = {}) {
+    return this.http.put<T>(`/api/${path}`, body, { params: query });
+  }
+  delete(path: string) {
+    return this.http.delete(`/api/${path}`);
+  }
   save(path: string, value: RecordData, multipart = false, id?: number | string) {
     let body: any = value;
     if (multipart) {
       const form = new FormData();
       Object.entries(value).forEach(([key, val]) => {
         if (val === undefined || val === null || val === '') return;
-        if (Array.isArray(val)) val.forEach(item => form.append(key, String(item)));
+        if (Array.isArray(val)) val.forEach((item) => form.append(key, String(item)));
         else form.append(key, val instanceof Blob ? val : String(val));
       });
       body = form;
@@ -31,7 +35,8 @@ export class WorkspaceApiService {
   }
 }
 export function apiError(error: any): string {
-  if (error?.status === 0) return 'Cannot reach the clinic API. Check that the backend is running and the proxy is configured.';
+  if (error?.status === 0)
+    return 'Cannot reach the clinic API. Check that the backend is running and the proxy is configured.';
   const errors = error?.error?.errors;
   if (Array.isArray(errors)) return errors.join(' ');
   if (errors && typeof errors === 'object') return Object.values(errors).flat().join(' ');

@@ -10,13 +10,13 @@ import { getPrimaryRole, ROLE_NAVIGATION, RoleNavigationItem } from '../../core/
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './role-workspace.component.html',
-  styleUrl: './role-workspace.component.css'
+  styleUrl: './role-workspace.component.css',
 })
 export class RoleWorkspaceComponent implements OnInit {
   currentUser: CurrentUser | null = null;
   isMenuOpen = false;
   readonly navigation = ROLE_NAVIGATION;
-  visibleNavigation:RoleNavigationItem[]=[];
+  visibleNavigation: RoleNavigationItem[] = [];
 
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -31,19 +31,28 @@ export class RoleWorkspaceComponent implements OnInit {
       next: (user) => {
         this.currentUser = user;
         const prefix = this.rolePrefix;
-        this.visibleNavigation=this.navigation.filter(item=>item.roles.some(role=>user.roles.includes(role))).map(item=>({...item,path:item.path.replace('/admin',prefix)}));
-        if(this.router.url.startsWith('/admin/') && prefix !== '/admin') this.router.navigateByUrl(this.router.url.replace('/admin/',prefix+'/'));
+        this.visibleNavigation = this.navigation
+          .filter((item) => item.roles.some((role) => user.roles.includes(role)))
+          .map((item) => ({ ...item, path: item.path.replace('/admin', prefix) }));
+        if (this.router.url.startsWith('/admin/') && prefix !== '/admin')
+          this.router.navigateByUrl(this.router.url.replace('/admin/', prefix + '/'));
       },
       error: () => {
         this.currentUser = null;
         this.router.navigate(['/admin/login']);
-      }
+      },
     });
   }
 
-  get rolePrefix():string {
-    const role=getPrimaryRole(this.currentUser?.roles);
-    return role==='Patient'?'/patient':role==='Doctor'?'/doctor':role==='Nurse'||role==='Receptionist'?'/staff':'/admin';
+  get rolePrefix(): string {
+    const role = getPrimaryRole(this.currentUser?.roles);
+    return role === 'Patient'
+      ? '/patient'
+      : role === 'Doctor'
+        ? '/doctor'
+        : role === 'Nurse' || role === 'Receptionist'
+          ? '/staff'
+          : '/admin';
   }
   get roleLabel(): string {
     return getPrimaryRole(this.currentUser?.roles) ?? 'Clinic user';
@@ -68,7 +77,7 @@ export class RoleWorkspaceComponent implements OnInit {
         this.toast.success('You have been signed out.', 'Signed out');
         this.router.navigate(['/admin/login']);
       },
-      error: () => this.toast.error('Unable to end your session. Please try again.', 'Sign out failed')
+      error: () => this.toast.error('Unable to end your session. Please try again.', 'Sign out failed'),
     });
   }
 }
