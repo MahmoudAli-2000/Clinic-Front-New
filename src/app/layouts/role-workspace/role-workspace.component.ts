@@ -1,3 +1,4 @@
+import { AppearanceService } from '../../core/services/appearance.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -13,6 +14,7 @@ import { getPrimaryRole, ROLE_NAVIGATION, RoleNavigationItem } from '../../core/
   styleUrl: './role-workspace.component.css',
 })
 export class RoleWorkspaceComponent implements OnInit {
+  private appearance = inject(AppearanceService);
   currentUser: CurrentUser | null = null;
   isMenuOpen = false;
   readonly navigation = ROLE_NAVIGATION;
@@ -30,6 +32,7 @@ export class RoleWorkspaceComponent implements OnInit {
     this.auth.currentUser().subscribe({
       next: (user) => {
         this.currentUser = user;
+        this.appearance.load(user.id);
         const prefix = this.rolePrefix;
         this.visibleNavigation = this.navigation
           .filter((item) => item.roles.some((role) => user.roles.includes(role)))
@@ -74,6 +77,7 @@ export class RoleWorkspaceComponent implements OnInit {
   onLogout(): void {
     this.auth.logout().subscribe({
       next: () => {
+        this.appearance.reset();
         this.toast.success('You have been signed out.', 'Signed out');
         this.router.navigate(['/admin/login']);
       },

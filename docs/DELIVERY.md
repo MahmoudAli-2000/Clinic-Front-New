@@ -9,3 +9,5 @@ Local commits and source archives contain the changes. **GitHub publishing was n
 No repository other than ClinicBack-New and Clinic-Front-New was accessed or changed.
 
 This package can be built locally after installing/configuring the documented prerequisites. SQL Server and SMTP are not bundled credentials/services. Build and automated test success does not establish production readiness for medical data.
+
+Personal appearance added: light/dark/device mode, accent, density, corners, font and text size, persisted per authenticated account.

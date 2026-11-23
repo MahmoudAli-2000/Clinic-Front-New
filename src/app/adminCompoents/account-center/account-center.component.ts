@@ -1,3 +1,4 @@
+import { AppearanceService, Appearance, DEFAULT_APPEARANCE } from '../../core/services/appearance.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +20,8 @@ export class AccountCenterComponent implements OnInit {
   auth = inject(AuthService);
   route = inject(ActivatedRoute);
   platform = inject(PLATFORM_ID);
+  appearanceService = inject(AppearanceService);
+  appearance: Appearance = { ...DEFAULT_APPEARANCE };
   section = 'notifications';
   user: CurrentUser | null = null;
   loading = true;
@@ -96,6 +99,8 @@ export class AccountCenterComponent implements OnInit {
     this.loading = true;
     try {
       if (this.section === 'settings') {
+        this.appearance = await firstValueFrom(this.api.get<Appearance>('Appearance'));
+        this.appearanceService.apply(this.appearance);
         this.profile = { fullName: this.user?.fullName };
         this.preferences = await firstValueFrom(this.api.get('Notifications/preferences'));
       }
@@ -156,6 +161,26 @@ export class AccountCenterComponent implements OnInit {
         this.api.put(row ? `Notifications/${row['id']}/read` : 'Notifications/read-all', {})
       );
       await this.load();
+    } catch (e) {
+      this.fail(e);
+    } finally {
+      this.busy = false;
+    }
+  }
+  previewAppearance() {
+    this.appearanceService.apply(this.appearance);
+  }
+  resetAppearance() {
+    this.appearance = { ...DEFAULT_APPEARANCE };
+    this.previewAppearance();
+  }
+  async saveAppearance() {
+    this.busy = true;
+    this.error = '';
+    try {
+      this.appearance = await firstValueFrom(this.appearanceService.save(this.appearance));
+      this.appearanceService.apply(this.appearance);
+      this.success = 'Your appearance settings are saved to your account.';
     } catch (e) {
       this.fail(e);
     } finally {

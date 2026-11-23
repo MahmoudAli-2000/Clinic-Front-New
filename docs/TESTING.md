@@ -3,8 +3,8 @@
 ## Results
 
 - Angular optimized production build: passed.
-- Browser workflow/responsive tests: 24 passed.
-- ASP.NET API-host tests with isolated EF InMemory data: 7 passed.
+- Browser workflow/responsive tests: 26 passed.
+- ASP.NET API-host tests with isolated EF InMemory data: 8 passed.
 - Visual inspection: actual desktop and phone screenshots reviewed after fixing transition rendering and 320px overflow.
 - Tested phone/tablet/desktop widths: 320, 360, 390, 430, 768 and 1440 pixels.
 

@@ -395,3 +395,171 @@ a {
     animation: none;
   }
 }
+
+/* Account-scoped appearance tokens. No arbitrary user CSS is accepted. */
+:root {
+  --cp-accent: #278575;
+  --cp-accent-ink: #fff;
+}
+.cp-button:not(.secondary) {
+  background: var(--cp-accent) !important;
+  border-color: var(--cp-accent) !important;
+  color: var(--cp-accent-ink) !important;
+}
+.brand-mark {
+  background: var(--cp-accent) !important;
+  color: var(--cp-accent-ink) !important;
+}
+.text-button,
+a.text-button {
+  color: var(--cp-accent);
+}
+.text-button.danger {
+  color: #bf7272;
+}
+html[data-corners='soft'] .cp-card,
+html[data-corners='soft'] .cp-modal,
+html[data-corners='soft'] .welcome-banner {
+  border-radius: 8px;
+}
+html[data-corners='square'] .cp-card,
+html[data-corners='square'] .cp-modal,
+html[data-corners='square'] .welcome-banner,
+html[data-corners='square'] .cp-button {
+  border-radius: 2px;
+}
+html[data-density='compact'] .cp-table td {
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+html[data-density='compact'] .workspace-content {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+html[data-density='compact'] .summary-card {
+  padding: 16px;
+}
+html[data-font='serif'] body,
+html[data-font='serif'] input,
+html[data-font='serif'] button,
+html[data-font='serif'] select,
+html[data-font='serif'] textarea {
+  font-family: Georgia, 'Times New Roman', serif !important;
+}
+html[data-font='mono'] body,
+html[data-font='mono'] input,
+html[data-font='mono'] button,
+html[data-font='mono'] select,
+html[data-font='mono'] textarea {
+  font-family: 'Courier New', monospace !important;
+}
+html[data-text-size='large'] .cp-table td,
+html[data-text-size='large'] .workspace-nav a,
+html[data-text-size='large'] label,
+html[data-text-size='large'] input,
+html[data-text-size='large'] select,
+html[data-text-size='large'] textarea {
+  font-size: 15px !important;
+}
+html[data-text-size='large'] .page-heading p,
+html[data-text-size='large'] .muted-copy {
+  font-size: 14px !important;
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --cp-ink: #dfebf0;
+  --cp-muted: #9ab0c0;
+  --cp-line: #2b3d4d;
+  --cp-bg: #101b25;
+}
+html[data-theme='dark'] body,
+html[data-theme='dark'] .workspace,
+html[data-theme='dark'] .workspace-main {
+  background: #101b25 !important;
+  color: #dfebf0 !important;
+}
+html[data-theme='dark'] .cp-card,
+html[data-theme='dark'] .cp-modal,
+html[data-theme='dark'] .workspace-sidebar,
+html[data-theme='dark'] .workspace-header,
+html[data-theme='dark'] .action-card,
+html[data-theme='dark'] .summary-card,
+html[data-theme='dark'] .recovery-card {
+  background: #192834 !important;
+  border-color: #2b3d4d !important;
+  color: #dbe8f0 !important;
+}
+html[data-theme='dark'] h1,
+html[data-theme='dark'] h2,
+html[data-theme='dark'] h3,
+html[data-theme='dark'] .name-cell,
+html[data-theme='dark'] .header-title strong,
+html[data-theme='dark'] .brand strong,
+html[data-theme='dark'] .user-copy strong,
+html[data-theme='dark'] .action-copy strong,
+html[data-theme='dark'] .summary-card strong,
+html[data-theme='dark'] .preview-row strong,
+html[data-theme='dark'] .update-row strong {
+  color: #deebf2 !important;
+}
+html[data-theme='dark'] p,
+html[data-theme='dark'] label,
+html[data-theme='dark'] .cp-table td,
+html[data-theme='dark'] .workspace-nav a,
+html[data-theme='dark'] .summary-card small,
+html[data-theme='dark'] .action-copy small,
+html[data-theme='dark'] .muted-copy {
+  color: #9eb4c4 !important;
+}
+html[data-theme='dark'] input:not([type='checkbox']):not([type='color']),
+html[data-theme='dark'] select,
+html[data-theme='dark'] textarea,
+html[data-theme='dark'] .icon-button,
+html[data-theme='dark'] .cp-button.secondary,
+html[data-theme='dark'] .logout-button,
+html[data-theme='dark'] .menu-toggle {
+  background: #13212d !important;
+  border-color: #344859 !important;
+  color: #d4e5ef !important;
+}
+html[data-theme='dark'] .cp-table th {
+  background: #14222e;
+  color: #9cb0be;
+  border-color: #2b3d4d;
+}
+html[data-theme='dark'] .cp-table td,
+html[data-theme='dark'] .pagination-bar,
+html[data-theme='dark'] .list-toolbar,
+html[data-theme='dark'] .preview-row,
+html[data-theme='dark'] .update-row,
+html[data-theme='dark'] .toggle-row {
+  border-color: #2b3d4d !important;
+}
+html[data-theme='dark'] .cp-table tbody tr:hover {
+  background: #1b303c;
+}
+html[data-theme='dark'] .welcome-banner {
+  background: linear-gradient(120deg, #1b3e37, #1b3039) !important;
+  border-color: #2e5147 !important;
+}
+html[data-theme='dark'] .workspace-nav a.active {
+  background: #243f37 !important;
+  color: #bce8d6 !important;
+}
+html[data-theme='dark'] .sidebar-help {
+  background: #14252e !important;
+  border-color: #2b3d4d !important;
+}
+html[data-theme='dark'] .date-tile,
+html[data-theme='dark'] .slot,
+html[data-theme='dark'] .notification-row.unread {
+  background: #1c342e !important;
+  border-color: #325447 !important;
+}
+html[data-theme='dark'] .cp-pill {
+  background: #30414f;
+  color: #c1d4df;
+}
+html[data-theme='dark'] .skeleton-row {
+  background: linear-gradient(90deg, #203341, #2b4152, #203341);
+}

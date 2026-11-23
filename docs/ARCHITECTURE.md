@@ -31,3 +31,5 @@ Tables scroll inside their cards on phones instead of causing page-wide overflow
 ## Asset and legacy policy
 
 Unused tourism images/video were removed from published assets (roughly 53 MB down to 112 KB). Legacy unreferenced tourism service source remains untouched so earlier project context is not silently lost. It is not routed into the clinic app. Global tourism CSS and the unused global Swiper stylesheet and unused AOS/Rellax/Swiper/legacy Angular Universal packages were removed from active output.
+
+AppearanceService applies validated account-scoped appearance settings. GET/PUT `/api/Appearance` stores the DTO in the authenticated account's existing Identity claims. Appearance is reset on logout and loaded for the next signed-in account.

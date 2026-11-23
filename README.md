@@ -47,3 +47,5 @@ Features include directories with create/edit/search/pagination, appointment lif
 - [Delivery summary](docs/DELIVERY.md)
 
 This is a source-code handoff, not certification for live medical use. Review backend security/dependency caveats before using real patient data.
+
+Personal appearance added: light/dark/device mode, accent, density, corners, font and text size, persisted per authenticated account.

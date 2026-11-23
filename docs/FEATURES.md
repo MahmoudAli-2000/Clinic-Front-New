@@ -34,3 +34,7 @@ The server can reject actions based on record ownership or workflow state even w
 ## Scope limits
 
 This covers the supplied API, not billing, insurance, inventory quantities, laboratory integrations, file attachments to visits, or payment features absent from the backend. Notification preference flags do not establish that every external channel is implemented. Directory lookup dropdowns load the first 100 records; server-side lookup search is a future scale improvement. UI language is English; Egyptian Arabic localization was not requested or implemented.
+
+## Personal appearance
+
+Each user can save light, dark or device mode, accent color, density, corners, text size and font in Account settings. Values are validated by the API and stored against that user in ASP.NET Identity claims, not a shared global record. No arbitrary CSS is accepted. A change previews instantly and is only persisted by Save appearance. The existing Identity claims table means no new database migration is needed.

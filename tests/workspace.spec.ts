@@ -66,7 +66,16 @@ async function mock(page: Page, role = 'Admin') {
     const url = new URL(route.request().url());
     const p = url.pathname.toLowerCase();
     let body: any = {};
-    if (p.endsWith('/auth/me')) body = user;
+    if (p.endsWith('/appearance'))
+      body = {
+        mode: 'light',
+        accent: '#278575',
+        density: 'comfortable',
+        corners: 'rounded',
+        textSize: 'default',
+        font: 'system',
+      };
+    else if (p.endsWith('/auth/me')) body = user;
     else if (p.includes('unread-count')) body = 2;
     else if (p.includes('notifications/preferences'))
       body = { allowInApp: true, allowEmail: true, appointmentReminders: true, generalUpdates: true };
@@ -318,6 +327,56 @@ test('capture active feature screens and auth forms', async ({ page }) => {
   ]) {
     await page.goto(route);
     await expect(page.locator(selector)).toBeVisible();
+    await page.screenshot({ path: `test-results/${name}.png`, fullPage: true, animations: 'disabled' });
+  }
+});
+
+test('account appearance previews dark mode and saves custom style', async ({ page }) => {
+  await mock(page);
+  await page.goto('/admin/settings');
+  await page.getByLabel('Theme mode').selectOption('dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.getByLabel('Corner style').selectOption('square');
+  await page.getByLabel('Layout density').selectOption('compact');
+  const request = page.waitForRequest((r) => r.method() === 'PUT' && r.url().includes('/Appearance'));
+  await page.getByRole('button', { name: 'Save appearance', exact: true }).click();
+  const body = (await request).postDataJSON();
+  expect(body.mode).toBe('dark');
+  expect(body.corners).toBe('square');
+  expect(body.density).toBe('compact');
+  await page.getByLabel('Theme mode').selectOption('dark');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.screenshot({ path: 'test-results/settings-dark.png', fullPage: true, animations: 'disabled' });
+  await page.goto('/admin/dashboard');
+  await page.evaluate(() => (document.documentElement.dataset.theme = 'dark'));
+  await expect(page.locator('.welcome-banner')).toBeVisible();
+  await page.screenshot({ path: 'test-results/dashboard-dark.png', fullPage: true, animations: 'disabled' });
+});
+
+test('persisted dark appearance is applied on dashboard and settings', async ({ page }) => {
+  await mock(page);
+  await page.route('**/api/Appearance?**', (r) =>
+    r.fulfill({
+      json: {
+        mode: 'dark',
+        accent: '#7c3aed',
+        density: 'comfortable',
+        corners: 'rounded',
+        textSize: 'default',
+        font: 'system',
+      },
+    })
+  );
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const [route, name] of [
+    ['/admin/dashboard', 'dashboard-dark'],
+    ['/admin/settings', 'settings-dark'],
+  ]) {
+    await page.goto(route);
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.locator('h1')).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: `test-results/${name}.png`, fullPage: true, animations: 'disabled' });
   }
 });

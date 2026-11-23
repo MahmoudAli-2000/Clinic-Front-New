@@ -64,6 +64,72 @@
           <button class="cp-button" [disabled]="busy || passwordForm.invalid">Change password</button>
         </form>
       </section>
+      <section class="cp-card settings-panel appearance-panel">
+        <span class="cp-eyebrow">MAKE IT YOURS</span>
+        <h2>Appearance &amp; personal style</h2>
+        <p class="muted-copy">
+          Saved to your own account. Changes preview instantly. Other users keep their own settings.
+        </p>
+        <form (ngSubmit)="saveAppearance()" class="appearance-form">
+          <label
+            >Theme mode<select [(ngModel)]="appearance.mode" name="mode" (change)="previewAppearance()">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">Match device</option>
+            </select></label
+          >
+          <label
+            >Accent color<input
+              type="color"
+              [(ngModel)]="appearance.accent"
+              name="accent"
+              (input)="previewAppearance()"
+          /></label>
+          <label
+            >Layout density<select
+              [(ngModel)]="appearance.density"
+              name="density"
+              (change)="previewAppearance()"
+            >
+              <option value="comfortable">Comfortable</option>
+              <option value="compact">Compact</option>
+            </select></label
+          >
+          <label
+            >Corner style<select
+              [(ngModel)]="appearance.corners"
+              name="corners"
+              (change)="previewAppearance()"
+            >
+              <option value="rounded">Rounded</option>
+              <option value="soft">Soft</option>
+              <option value="square">Square</option>
+            </select></label
+          >
+          <label
+            >Text size<select
+              [(ngModel)]="appearance.textSize"
+              name="textSize"
+              (change)="previewAppearance()"
+            >
+              <option value="default">Default</option>
+              <option value="large">Larger</option>
+            </select></label
+          >
+          <label
+            >Font style<select [(ngModel)]="appearance.font" name="font" (change)="previewAppearance()">
+              <option value="system">Modern system</option>
+              <option value="serif">Classic serif</option>
+              <option value="mono">Monospace</option>
+            </select></label
+          >
+          <div class="appearance-actions">
+            <button class="cp-button secondary" type="button" (click)="resetAppearance()">
+              Reset preview</button
+            ><button class="cp-button" [disabled]="busy">Save appearance</button>
+          </div>
+        </form>
+      </section>
       <section class="cp-card settings-panel preference-panel">
         <span class="cp-eyebrow">YOUR PREFERENCES</span>
         <h2>Keep in touch, your way</h2>
@@ -173,8 +239,9 @@
           *ngFor="let key of ['averageDoctorRating', 'averageClinicRating', 'averageStaffRating']"
           class="cp-card"
         >
-          <span>{{ label(key) }}</span
-          ><strong>{{ stats[key] ? (stats[key] | number: '1.1-1') : '-' }} <small>/ 5</small></strong>
+          <span>{{ label(key) }}</span><strong
+            >{{ stats[key] ? (stats[key] | number: '1.1-1') : '-' }} <small>/ 5</small></strong
+          >
         </div>
       </div>
       <div class="review-grid">
