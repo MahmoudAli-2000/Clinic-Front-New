@@ -1,3 +1,5 @@
+import { ClinicDatePipe } from '../../core/pipes/clinic-date.pipe';
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -13,9 +15,9 @@ type CareSection = 'visits' | 'prescriptions' | 'profile';
 @Component({
   selector: 'app-personal-care',
   standalone: true,
-  imports: [CommonModule],
+  imports: [ClinicDatePipe, UiPipe, CommonModule],
   templateUrl: './personal-care.component.html',
-  styleUrl: './personal-care.component.css'
+  styleUrl: './personal-care.component.css',
 })
 export class PersonalCareComponent implements OnInit {
   section: CareSection = 'visits';
@@ -38,9 +40,12 @@ export class PersonalCareComponent implements OnInit {
     }
     this.route.data.subscribe((data) => {
       this.section = (data['section'] ?? 'visits') as CareSection;
-      this.pageTitle = this.section === 'profile'
-        ? 'My profile'
-        : this.section === 'prescriptions' ? 'Prescriptions' : 'My visits';
+      this.pageTitle =
+        this.section === 'profile'
+          ? 'My profile'
+          : this.section === 'prescriptions'
+            ? 'Prescriptions'
+            : 'My visits';
       this.load();
     });
   }
@@ -63,7 +68,7 @@ export class PersonalCareComponent implements OnInit {
               this.visits = result;
               this.isLoading = false;
             },
-            error: () => this.fail('Unable to load your visit history.')
+            error: () => this.fail('Unable to load your visit history.'),
           });
           return;
         }
@@ -74,7 +79,7 @@ export class PersonalCareComponent implements OnInit {
               this.prescriptions = result;
               this.isLoading = false;
             },
-            error: () => this.fail('Unable to load your prescriptions.')
+            error: () => this.fail('Unable to load your prescriptions.'),
           });
           return;
         }
@@ -85,14 +90,14 @@ export class PersonalCareComponent implements OnInit {
               this.prescriptions = result;
               this.isLoading = false;
             },
-            error: () => this.fail('Unable to load your prescription history.')
+            error: () => this.fail('Unable to load your prescription history.'),
           });
           return;
         }
 
         this.fail('Your account is not linked to the required clinic record yet.');
       },
-      error: () => this.fail('Unable to load your account details.')
+      error: () => this.fail('Unable to load your account details.'),
     });
   }
 

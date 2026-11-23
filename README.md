@@ -1,3 +1,7 @@
+## Arabic / English and profile photos
+
+See [the detailed bilingual, migration, seed and photo guide](docs/BILINGUAL-SETUP.md). The migration is already included.
+
 # CarePoint Clinic frontend
 
 Angular 17.3 clinic workspace, continued on the original standalone application structure. Every component keeps its TypeScript, HTML and CSS in separate files.

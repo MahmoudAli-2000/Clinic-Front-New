@@ -34,7 +34,7 @@
 }
 
 .welcome-banner .eyebrow i {
-  margin-right: 5px;
+  margin-inline-end: 5px;
 }
 
 .welcome-banner h1 {
@@ -56,7 +56,7 @@
 .welcome-art {
   position: absolute;
   top: 0;
-  right: 4%;
+  inset-inline-end: 4%;
   display: grid;
   width: 230px;
   height: 100%;
@@ -258,7 +258,7 @@
 }
 
 .card-arrow {
-  margin-left: auto;
+  margin-inline-start: auto;
   color: #aab4c2;
   font-size: 12px;
 }
@@ -345,7 +345,7 @@
   }
 
   .welcome-art {
-    right: -78px;
+    inset-inline-end: -78px;
     opacity: 0.44;
   }
 
@@ -592,7 +592,7 @@
     max-width: 350px;
   }
   .welcome-art {
-    right: 1%;
+    inset-inline-end: 1%;
     opacity: 0.5;
   }
   .summary-grid {
@@ -655,5 +655,17 @@
   }
   .action-copy {
     min-width: 0;
+  }
+}
+
+.welcome-copy {
+  max-width: calc(100% - 160px);
+}
+@media (max-width: 560px) {
+  .welcome-copy {
+    max-width: 100%;
+  }
+  .welcome-art {
+    display: none;
   }
 }

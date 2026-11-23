@@ -4,21 +4,20 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
+  private httpcleint = inject(HttpClient);
 
-  private httpcleint=inject(HttpClient);
-  
-    getAllUser(pageIndex: number, pageSize: number): Observable<any> {
-      const params = {
-        pageIndex: pageIndex,
-        pageSize: pageSize
-      };
-    
-      return this.httpcleint.get(`${environment.BaseUrl}/api/User`, { params });
-    }
-    getAllUserById(id:number):Observable<any>{
-      return this.httpcleint.get(`${environment.BaseUrl}/api/User/${id}`);
-    }
+  getAllUser(pageIndex: number, pageSize: number): Observable<any> {
+    const params = {
+      pageIndex: pageIndex,
+      pageSize: pageSize,
+    };
+
+    return this.httpcleint.get(`${environment.BaseUrl}/api/User`, { params });
   }
+  getAllUserById(id: number): Observable<any> {
+    return this.httpcleint.get(`${environment.BaseUrl}/api/User/${id}`);
+  }
+}

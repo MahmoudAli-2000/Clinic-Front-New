@@ -16,8 +16,8 @@ describe('authInterceptorInterceptor', () => {
         provideHttpClient(withInterceptors([authInterceptorInterceptor])),
         provideHttpClientTesting(),
         { provide: PLATFORM_ID, useValue: 'browser' },
-        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } }
-      ]
+        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+      ],
     });
   });
 
@@ -40,9 +40,7 @@ describe('authInterceptorInterceptor', () => {
 
     http.get(`${environment.BaseUrl}/api/Account/check-auth`).subscribe();
 
-    const request = httpTestingController.expectOne(
-      `${environment.BaseUrl}/api/Account/check-auth`
-    );
+    const request = httpTestingController.expectOne(`${environment.BaseUrl}/api/Account/check-auth`);
     request.flush({});
   });
 });

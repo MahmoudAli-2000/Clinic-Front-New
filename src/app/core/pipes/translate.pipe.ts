@@ -4,10 +4,9 @@ import { TranslationService } from '../services/translation.service';
 @Pipe({
   name: 't',
   standalone: true,
-  pure: false
+  pure: false,
 })
 export class TranslatedPipe implements PipeTransform, OnDestroy {
-
   private effectRef?: EffectRef;
 
   constructor(

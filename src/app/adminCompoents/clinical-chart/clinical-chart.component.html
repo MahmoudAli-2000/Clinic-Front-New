@@ -1,25 +1,26 @@
 <section class="cp-page">
   <header class="page-heading">
     <div>
-      <span class="cp-eyebrow">CAREPOINT / PATIENT CARE</span>
-      <h1>{{ visit ? 'Visit chart #' + visit['id'] : 'Care history' }}</h1>
-      <p>A connected record of visits, clinical notes and treatment.</p>
+      <span class="cp-eyebrow">{{ 'CAREPOINT / PATIENT CARE' | ui }}</span>
+      <h1>{{ (visit ? 'Visit chart #' + visit['id'] : 'Care history') | ui }}</h1>
+      <p>{{ 'A connected record of visits, clinical notes and treatment.' | ui }}</p>
     </div>
-    <a routerLink="/admin/appointments" class="cp-button secondary">Appointments</a>
+    <a routerLink="/admin/appointments" class="cp-button secondary">{{ 'Appointments' | ui }}</a>
   </header>
-  <div class="cp-alert error" *ngIf="error" role="alert">{{ error }}</div>
-  <div class="cp-alert success" *ngIf="success" role="status">{{ success }}</div>
+  <div class="cp-alert error" *ngIf="error" role="alert">{{ error | ui }}</div>
+  <div class="cp-alert success" *ngIf="success" role="status">{{ success | ui }}</div>
   <div class="cp-card history-search" *ngIf="!user?.patientId">
     <form (ngSubmit)="visit = null; history()">
       <label
-        >Find patient history<input
+        >{{ 'Find patient history' | ui
+        }}<input
           type="number"
           min="1"
           name="patient"
           [(ngModel)]="patientId"
-          placeholder="Patient ID"
+          [placeholder]="'Patient ID' | ui"
           required /></label
-      ><button class="cp-button">Open history</button>
+      ><button class="cp-button">{{ 'Open history' | ui }}</button>
     </form>
   </div>
   <div *ngIf="loading" class="skeleton-list">
@@ -28,61 +29,81 @@
   <ng-container *ngIf="!loading && visit"
     ><div class="cp-card chart-summary">
       <div>
-        <span class="cp-eyebrow">VISIT SUMMARY</span>
-        <h2>{{ visit['chiefComplaint'] || 'Clinical consultation' }}</h2>
+        <span class="cp-eyebrow">{{ 'VISIT SUMMARY' | ui }}</span>
+        <h2>{{ visit['chiefComplaint'] || 'Clinical consultation' | ui }}</h2>
         <p>
-          Patient #{{ visit['patientId'] }} · Appointment #{{ visit['appointmentId'] }} ·
-          {{ visit['visitStartAtUtc'] | date: 'medium' }}
+          {{ 'Patient #' | ui }}{{ visit['patientId'] | ui }} {{ '· Appointment #' | ui
+          }}{{ visit['appointmentId'] | ui }} ·
+          {{ visit['visitStartAtUtc'] | clinicDate: 'medium' | ui }}
         </p>
-        <span class="cp-pill" [attr.data-status]="visit['status']">{{ visit['status'] }}</span>
+        <span class="cp-pill" [attr.data-status]="visit['status']">{{ visit['status'] | ui }}</span>
       </div>
       <div class="chart-actions" *ngIf="clinical">
-        <button class="cp-button secondary" (click)="open('notes')">Edit notes</button
-        ><button class="cp-button secondary" (click)="prescription()" *ngIf="doctor">Prescribe</button
+        <button class="cp-button secondary" (click)="open('notes')">{{ 'Edit notes' | ui }}</button><button
+          class="cp-button secondary"
+          (click)="prescription()"
+          *ngIf="doctor"
+        >
+          {{ 'Prescribe' | ui }}</button
         ><button class="cp-button" (click)="open('complete')" *ngIf="visit['status'] !== 'Completed'">
-          Complete visit
+          {{ 'Complete visit' | ui }}
         </button>
       </div>
     </div>
     <div class="cp-card note-panel">
-      <h2>Clinical notes</h2>
-      <p class="preserve-lines">{{ visit['doctorNotes'] || 'No clinical notes recorded.' }}</p>
+      <h2>{{ 'Clinical notes' | ui }}</h2>
+      <p class="preserve-lines">{{ visit['doctorNotes'] || 'No clinical notes recorded.' | ui }}</p>
     </div>
     <div class="chart-grid">
       <section class="cp-card">
         <header class="section-heading">
-          <h2>Vital signs</h2>
-          <button class="text-button" *ngIf="clinical" (click)="open('vitals')">+ Record vitals</button>
+          <h2>{{ 'Vital signs' | ui }}</h2>
+          <button class="text-button" *ngIf="clinical" (click)="open('vitals')">
+            {{ '+ Record vitals' | ui }}
+          </button>
         </header>
         <div class="clinical-record" *ngFor="let vital of visit['vitalSigns']">
           <dl>
             <div *ngFor="let entry of entries(vital)">
-              <dt>{{ label(entry[0]) }}</dt>
-              <dd>{{ entry[1] }}</dd>
+              <dt>{{ label(entry[0]) | ui }}</dt>
+              <dd>{{ entry[1] | ui }}</dd>
             </div>
           </dl>
           <div *ngIf="clinical" class="row-actions">
-            <button class="text-button" (click)="open('vitals', vital)">Edit</button
-            ><button class="text-button danger" (click)="remove('vitals', vital.id)">Delete</button>
+            <button class="text-button" (click)="open('vitals', vital)">{{ 'Edit' | ui }}</button><button
+              class="text-button danger"
+              (click)="remove('vitals', vital.id)"
+            >
+              {{ 'Delete' | ui }}
+            </button>
           </div>
         </div>
-        <p class="muted-copy" *ngIf="!visit['vitalSigns']?.length">No vital signs recorded yet.</p>
+        <p class="muted-copy" *ngIf="!visit['vitalSigns']?.length">
+          {{ 'No vital signs recorded yet.' | ui }}
+        </p>
       </section>
       <section class="cp-card">
         <header class="section-heading">
-          <h2>Diagnoses</h2>
-          <button class="text-button" *ngIf="clinical" (click)="open('diagnoses')">+ Add diagnosis</button>
+          <h2>{{ 'Diagnoses' | ui }}</h2>
+          <button class="text-button" *ngIf="clinical" (click)="open('diagnoses')">
+            {{ '+ Add diagnosis' | ui }}
+          </button>
         </header>
         <div class="clinical-record" *ngFor="let diagnosis of visit['diagnoses']">
-          <strong>{{ diagnosis.diagnosisName }}</strong>
-          <p>{{ diagnosis.diagnosisCode }} · {{ diagnosis.diagnosisType }}</p>
-          <p>{{ diagnosis.notes }}</p>
+          <strong>{{ diagnosis.diagnosisName | ui }}</strong>
+          <p>{{ diagnosis.diagnosisCode | ui }} · {{ diagnosis.diagnosisType | ui }}</p>
+          <p>{{ diagnosis.notes | ui }}</p>
           <div class="row-actions" *ngIf="clinical">
-            <button class="text-button" (click)="open('diagnoses', diagnosis)">Edit</button
-            ><button class="text-button danger" (click)="remove('diagnoses', diagnosis.id)">Delete</button>
+            <button class="text-button" (click)="open('diagnoses', diagnosis)">
+              {{ 'Edit' | ui }}</button><button
+              class="text-button danger"
+              (click)="remove('diagnoses', diagnosis.id)"
+            >
+              {{ 'Delete' | ui }}
+            </button>
           </div>
         </div>
-        <p class="muted-copy" *ngIf="!visit['diagnoses']?.length">No diagnoses recorded yet.</p>
+        <p class="muted-copy" *ngIf="!visit['diagnoses']?.length">{{ 'No diagnoses recorded yet.' | ui }}</p>
       </section>
     </div></ng-container
   >
@@ -90,26 +111,30 @@
     ><div class="cp-card history-list">
       <div *ngFor="let item of visits" class="history-item">
         <div>
-          <span class="cp-pill" [attr.data-status]="item['status']">{{ item['status'] }}</span>
-          <h2>{{ item['chiefComplaint'] || 'Consultation #' + item['id'] }}</h2>
-          <p>{{ item['visitStartAtUtc'] | date: 'medium' }} · Appointment #{{ item['appointmentId'] }}</p>
+          <span class="cp-pill" [attr.data-status]="item['status']">{{ item['status'] | ui }}</span>
+          <h2>{{ item['chiefComplaint'] || 'Consultation #' + item['id'] | ui }}</h2>
+          <p>
+            {{ item['visitStartAtUtc'] | clinicDate: 'medium' | ui }} {{ '· Appointment #' | ui
+            }}{{ item['appointmentId'] | ui }}
+          </p>
         </div>
-        <button class="cp-button secondary" (click)="openVisit(item['id'])">View chart</button>
+        <button class="cp-button secondary" (click)="openVisit(item['id'])">{{ 'View chart' | ui }}</button>
       </div>
       <div class="cp-empty" *ngIf="!visits.length">
         <span class="empty-icon"><i class="fas fa-notes-medical"></i></span>
-        <h2>No visits to display</h2>
-        <p>Your visit history will appear here after your first consultation.</p>
+        <h2>{{ 'No visits to display' | ui }}</h2>
+        <p>{{ 'Your visit history will appear here after your first consultation.' | ui }}</p>
       </div>
     </div>
     <div class="cp-card prescription-history" *ngIf="prescriptions.length">
-      <h2>Prescription history</h2>
+      <h2>{{ 'Prescription history' | ui }}</h2>
       <div class="clinical-record" *ngFor="let rx of prescriptions">
-        <strong>Prescription #{{ rx['id'] }} · {{ rx['status'] }}</strong>
-        <p>{{ rx['issuedAtUtc'] | date: 'mediumDate' }}</p>
+        <strong>{{ 'Prescription #' | ui }}{{ rx['id'] | ui }} · {{ rx['status'] | ui }}</strong>
+        <p>{{ rx['issuedAtUtc'] | clinicDate: 'mediumDate' | ui }}</p>
         <ul>
           <li *ngFor="let item of rx['items']">
-            {{ item.medicationName }} · {{ item.dose }} · {{ item.frequency }} · {{ item.durationDays }} days
+            {{ item.medicationName | ui }} · {{ item.dose | ui }} · {{ item.frequency | ui }} ·
+            {{ item.durationDays | ui }} days
           </li>
         </ul>
       </div>
@@ -124,13 +149,18 @@
       (click)="$event.stopPropagation()"
     >
       <header>
-        <h2>{{ label(action) }}</h2>
-        <button class="icon-button" (click)="modal = false" [disabled]="busy" aria-label="Close form">
+        <h2>{{ label(action) | ui }}</h2>
+        <button
+          class="icon-button"
+          (click)="modal = false"
+          [disabled]="busy"
+          [attr.aria-label]="'Close form' | ui"
+        >
           ×
         </button>
       </header>
-      <p *ngIf="action === 'complete'">Completing the visit also completes its appointment.</p>
-      <div class="cp-alert error" *ngIf="error">{{ error }}</div>
+      <p *ngIf="action === 'complete'">{{ 'Completing the visit also completes its appointment.' | ui }}</p>
+      <div class="cp-alert error" *ngIf="error">{{ error | ui }}</div>
       <app-entity-form
         [fields]="fields"
         [value]="value"
@@ -145,50 +175,54 @@
       class="cp-modal prescription-modal"
       role="dialog"
       aria-modal="true"
-      aria-label="Issue prescription"
+      [attr.aria-label]="'Issue prescription' | ui"
     >
       <header>
-        <h2>Issue prescription</h2>
-        <button class="icon-button" (click)="prescribe = false" aria-label="Close prescription">×</button>
+        <h2>{{ 'Issue prescription' | ui }}</h2>
+        <button class="icon-button" (click)="prescribe = false" [attr.aria-label]="'Close prescription' | ui">
+          ×
+        </button>
       </header>
-      <div class="cp-alert error" *ngIf="error">{{ error }}</div>
+      <div class="cp-alert error" *ngIf="error">{{ error | ui }}</div>
       <form #rxForm="ngForm" (ngSubmit)="rxForm.valid && savePrescription()">
         <div class="rx-item" *ngFor="let item of items; let i = index">
           <label
-            >Medication<select [(ngModel)]="item['medicationId']" [name]="'medication' + i" required>
-              <option [ngValue]="undefined">Select medication</option>
+            >{{ 'Medication' | ui
+            }}<select [(ngModel)]="item['medicationId']" [name]="'medication' + i" required>
+              <option [ngValue]="undefined">{{ 'Select medication' | ui }}</option>
               <option *ngFor="let med of medications" [ngValue]="med['id']">
-                {{ med['genericName'] }} {{ med['strength'] }}
+                {{ med['genericName'] | ui }} {{ med['strength'] | ui }}
               </option>
             </select></label
-          ><label>Dose<input [(ngModel)]="item['dose']" [name]="'dose' + i" /></label
-          ><label>Frequency<input [(ngModel)]="item['frequency']" [name]="'frequency' + i" /></label
+          ><label>{{ 'Dose' | ui }}<input [(ngModel)]="item['dose']" [name]="'dose' + i" /></label
           ><label
-            >Days<input type="number" min="1" [(ngModel)]="item['durationDays']" [name]="'days' + i" /></label
-          ><label>Route<input [(ngModel)]="item['route']" [name]="'route' + i" /></label
+            >{{ 'Frequency' | ui }}<input [(ngModel)]="item['frequency']" [name]="'frequency' + i" /></label
           ><label
-            >Quantity<input
-              type="number"
-              min="0"
-              [(ngModel)]="item['quantity']"
-              [name]="'quantity' + i" /></label
-          ><label>Instructions<input [(ngModel)]="item['instructions']" [name]="'instructions' + i" /></label
+            >{{ 'Days' | ui
+            }}<input type="number" min="1" [(ngModel)]="item['durationDays']" [name]="'days' + i" /></label
+          ><label>{{ 'Route' | ui }}<input [(ngModel)]="item['route']" [name]="'route' + i" /></label
+          ><label
+            >{{ 'Quantity' | ui
+            }}<input type="number" min="0" [(ngModel)]="item['quantity']" [name]="'quantity' + i" /></label
+          ><label
+            >{{ 'Instructions' | ui
+            }}<input [(ngModel)]="item['instructions']" [name]="'instructions' + i" /></label
           ><button
             *ngIf="items.length > 1"
             class="text-button danger"
             type="button"
             (click)="items.splice(i, 1)"
           >
-            Remove
+            {{ 'Remove' | ui }}
           </button>
         </div>
-        <button class="text-button" type="button" (click)="addItem()">+ Add medication</button
-        ><label class="rx-notes"
-          >Notes<textarea [(ngModel)]="prescriptionNotes" name="notes"></textarea>
+        <button class="text-button" type="button" (click)="addItem()">
+          {{ '+ Add medication' | ui }}</button><label class="rx-notes"
+          >{{ 'Notes' | ui }}<textarea [(ngModel)]="prescriptionNotes" name="notes"></textarea>
         </label>
         <div class="form-actions">
           <button class="cp-button" [disabled]="busy || rxForm.invalid">
-            {{ busy ? 'Issuing...' : 'Issue prescription' }}
+            {{ (busy ? 'Issuing...' : 'Issue prescription') | ui }}
           </button>
         </div>
       </form>

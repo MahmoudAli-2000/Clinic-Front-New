@@ -12,9 +12,12 @@ describe('authGuardGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        { provide: AuthService, useValue: { checkAuth: jasmine.createSpy('checkAuth').and.returnValue(of(true)) } },
-        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } }
-      ]
+        {
+          provide: AuthService,
+          useValue: { checkAuth: jasmine.createSpy('checkAuth').and.returnValue(of(true)) },
+        },
+        { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+      ],
     });
   });
 
@@ -31,6 +34,8 @@ describe('authGuardGuard', () => {
     const allowed = await firstValueFrom(executeGuard({} as any, { url: '/admin/patients' } as any) as any);
 
     expect(allowed).toBeFalse();
-    expect(router.navigate).toHaveBeenCalledWith(['/admin/login'], { queryParams: { returnUrl: '/admin/patients' } });
+    expect(router.navigate).toHaveBeenCalledWith(['/admin/login'], {
+      queryParams: { returnUrl: '/admin/patients' },
+    });
   });
 });

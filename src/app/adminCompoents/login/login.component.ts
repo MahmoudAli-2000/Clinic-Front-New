@@ -1,3 +1,4 @@
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule, NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './../../core/services/auth.service';
@@ -11,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgClass, RouterLink]
+  imports: [UiPipe, ReactiveFormsModule, CommonModule, NgClass, RouterLink],
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
@@ -26,16 +27,22 @@ export class LoginComponent implements OnInit {
   private readonly _route = inject(ActivatedRoute);
   private readonly toasterService = inject(ToastrService);
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
 
     const returnUrl = this._route.snapshot.queryParams['returnUrl'];
-    this.returnUrl = typeof returnUrl === 'string' && /^\/(admin|patient|doctor|staff)\//.test(returnUrl) ? returnUrl : '/admin/dashboard';
+    this.returnUrl =
+      typeof returnUrl === 'string' && /^\/(admin|patient|doctor|staff)\//.test(returnUrl)
+        ? returnUrl
+        : '/admin/dashboard';
   }
 
   onSubmit(): void {
@@ -47,23 +54,22 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    if(this.busy)return;
-    this.busy=true;
+    if (this.busy) return;
+    this.busy = true;
     const loginData = this.loginForm.value;
 
     this.authService.Login(loginData).subscribe({
       next: () => {
-        this.busy=false;
+        this.busy = false;
         this.IsSccuess = true;
         this.toasterService.success('Login successful!', 'Success');
         this._router.navigateByUrl(this.returnUrl);
       },
       error: (err: HttpErrorResponse) => {
-        this.busy=false;
+        this.busy = false;
         this.serverError = err.error?.message || 'Invalid email or password';
         this.toasterService.error(this.serverError, 'Login Failed');
-      }
+      },
     });
   }
 }
-

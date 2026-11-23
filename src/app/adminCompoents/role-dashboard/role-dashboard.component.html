@@ -1,9 +1,9 @@
 <section class="dashboard-page">
   <div class="welcome-banner">
     <div class="welcome-copy">
-      <span class="eyebrow"><i class="fas fa-sparkles"></i> {{ content.focus }}</span>
-      <h1>{{ content.heading }}, {{ firstName }}</h1>
-      <p>{{ content.description }}</p>
+      <span class="eyebrow"><i class="fas fa-sparkles"></i> {{ content.focus | ui }}</span>
+      <h1>{{ content.heading | ui }}, {{ firstName | ui }}</h1>
+      <p>{{ content.description | ui }}</p>
     </div>
     <div class="welcome-art" aria-hidden="true">
       <span class="art-circle circle-one"></span>
@@ -14,95 +14,97 @@
 
   <div *ngIf="isLoading" class="loading-card">
     <span class="loader"></span>
-    <span>Preparing your workspace...</span>
+    <span>{{ 'Preparing your workspace...' | ui }}</span>
   </div>
 
   <div *ngIf="loadError" class="error-card">
-    We couldn't load your account details. Refresh the page or sign in again.
+    {{ "We couldn't load your account details. Refresh the page or sign in again." | ui }}
   </div>
 
   <div class="summary-grid" *ngIf="!isLoading && !loadError">
     <article class="summary-card">
       <span class="summary-icon blue"><i class="fas fa-calendar-check"></i></span>
       <div>
-        <small>{{ role === 'Patient' ? 'My appointments' : 'Appointments' }}</small>
-        <strong>{{ appointmentCount ?? '-' }}</strong>
+        <small>{{ (role === 'Patient' ? 'My appointments' : 'Appointments') | ui }}</small>
+        <strong>{{ appointmentCount ?? '-' | ui }}</strong>
       </div>
     </article>
     <article class="summary-card" *ngIf="role === 'Patient'">
       <span class="summary-icon teal"><i class="fas fa-notes-medical"></i></span>
       <div>
-        <small>Visit history</small><strong>{{ personalVisitCount ?? '-' }}</strong>
+        <small>{{ 'Visit history' | ui }}</small><strong>{{ personalVisitCount ?? '-' | ui }}</strong>
       </div>
     </article>
     <article class="summary-card" *ngIf="role === 'Patient' || role === 'Doctor'">
       <span class="summary-icon violet"><i class="fas fa-prescription"></i></span>
       <div>
-        <small>Prescriptions</small><strong>{{ personalPrescriptionCount ?? '-' }}</strong>
+        <small>{{ 'Prescriptions' | ui }}</small><strong>{{ personalPrescriptionCount ?? '-' | ui }}</strong>
       </div>
     </article>
     <article class="summary-card">
       <span class="summary-icon amber"><i class="fas fa-bell"></i></span>
       <div>
-        <small>Unread notifications</small><strong>{{ unreadNotifications ?? '-' }}</strong>
+        <small>{{ 'Unread notifications' | ui }}</small><strong>{{ unreadNotifications ?? '-' | ui }}</strong>
       </div>
     </article>
   </div>
 
   <div class="cp-alert error" *ngIf="dataWarning">
-    Some live data could not be loaded. Missing values are shown as a dash, not zero.
+    {{ 'Some live data could not be loaded. Missing values are shown as a dash, not zero.' | ui }}
   </div>
   <div class="dashboard-panels" *ngIf="!isLoading && !loadError">
     <section class="cp-card appointment-preview">
       <header>
         <div>
-          <span class="cp-eyebrow">YOUR CARE AT A GLANCE</span>
-          <h2>Appointment activity</h2>
+          <span class="cp-eyebrow">{{ 'YOUR CARE AT A GLANCE' | ui }}</span>
+          <h2>{{ 'Appointment activity' | ui }}</h2>
         </div>
         <a routerLink="/admin/appointments" class="text-button"
-          >View all <i class="fas fa-arrow-right"></i
+          >{{ 'View all' | ui }} <i class="fas fa-arrow-right"></i
         ></a>
       </header>
       <div class="preview-row" *ngFor="let item of upcoming">
         <span class="date-tile"
-          ><strong>{{ item['scheduledStartAtUtc'] | date: 'dd' }}</strong
-          ><small>{{ item['scheduledStartAtUtc'] | date: 'MMM' }}</small></span
+          ><strong>{{ item['scheduledStartAtUtc'] | clinicDate: 'dd' | ui }}</strong
+          ><small>{{ item['scheduledStartAtUtc'] | clinicDate: 'MMM' | ui }}</small></span
         >
         <div>
-          <strong>{{ role === 'Patient' ? item['doctorName'] : item['patientName'] }}</strong
-          ><small>{{ item['clinicName'] }} · {{ item['scheduledStartAtUtc'] | date: 'h:mm a' }}</small>
+          <strong>{{ (role === 'Patient' ? item['doctorName'] : item['patientName']) | ui }}</strong><small
+            >{{ item['clinicName'] | ui }} ·
+            {{ item['scheduledStartAtUtc'] | clinicDate: 'h:mm a' | ui }}</small
+          >
         </div>
-        <span class="cp-pill" [attr.data-status]="item['status']">{{ item['status'] }}</span>
+        <span class="cp-pill" [attr.data-status]="item['status']">{{ item['status'] | ui }}</span>
       </div>
-      <p *ngIf="!upcoming.length" class="panel-empty">No appointment activity to display.</p>
+      <p *ngIf="!upcoming.length" class="panel-empty">{{ 'No appointment activity to display.' | ui }}</p>
     </section>
     <section class="cp-card update-preview">
       <header>
         <div>
-          <span class="cp-eyebrow">STAY CONNECTED</span>
-          <h2>Latest updates</h2>
+          <span class="cp-eyebrow">{{ 'STAY CONNECTED' | ui }}</span>
+          <h2>{{ 'Latest updates' | ui }}</h2>
         </div>
-        <a routerLink="/admin/notifications" class="text-button">See all</a>
+        <a routerLink="/admin/notifications" class="text-button">{{ 'See all' | ui }}</a>
       </header>
       <article class="update-row" *ngFor="let notification of recentNotifications">
         <span><i class="fas fa-bell"></i></span>
         <div>
-          <strong>{{ notification['title'] }}</strong>
-          <p>{{ notification['message'] }}</p>
-          <small>{{ notification['createdAtUtc'] | date: 'MMM d, h:mm a' }}</small>
+          <strong>{{ notification['title'] | ui }}</strong>
+          <p>{{ notification['message'] | ui }}</p>
+          <small>{{ notification['createdAtUtc'] | clinicDate: 'MMM d, h:mm a' | ui }}</small>
         </div>
       </article>
       <p class="panel-empty" *ngIf="!recentNotifications.length">
-        You're all caught up. Updates will appear here.
+        {{ "You're all caught up. Updates will appear here." | ui }}
       </p>
     </section>
   </div>
   <div class="section-heading">
     <div>
-      <span class="eyebrow">YOUR WORKSPACE</span>
-      <h2>Quick access</h2>
+      <span class="eyebrow">{{ 'YOUR WORKSPACE' | ui }}</span>
+      <h2>{{ 'Quick access' | ui }}</h2>
     </div>
-    <span class="role-chip"><i class="fas fa-user-check"></i> {{ role }}</span>
+    <span class="role-chip"><i class="fas fa-user-check"></i> {{ role | ui }}</span>
   </div>
 
   <div class="action-grid">
@@ -111,8 +113,8 @@
         <i [ngClass]="'fas ' + action.icon"></i>
       </span>
       <span class="action-copy">
-        <strong>{{ action.title }}</strong>
-        <small>{{ action.description }}</small>
+        <strong>{{ action.title | ui }}</strong>
+        <small>{{ action.description | ui }}</small>
       </span>
       <i class="fas fa-arrow-up-right-from-square card-arrow"></i>
     </a>
@@ -121,8 +123,8 @@
   <div class="privacy-note">
     <span><i class="fas fa-lock"></i></span>
     <p>
-      <strong>Your workspace is role-aware.</strong> Information and tools are shown according to your clinic
-      access.
+      <strong>{{ 'Your workspace is role-aware.' | ui }}</strong>
+      {{ 'Information and tools are shown according to your clinic access.' | ui }}
     </p>
   </div>
 </section>

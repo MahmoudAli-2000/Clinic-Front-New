@@ -1,3 +1,5 @@
+import { ClinicDatePipe } from '../../core/pipes/clinic-date.pipe';
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
@@ -233,7 +235,7 @@ const DASHBOARDS: Record<ClinicRole, DashboardContent> = {
 @Component({
   selector: 'app-role-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [ClinicDatePipe, UiPipe, CommonModule, RouterLink],
   templateUrl: './role-dashboard.component.html',
   styleUrl: './role-dashboard.component.css',
 })

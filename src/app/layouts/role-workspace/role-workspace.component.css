@@ -15,7 +15,8 @@
 .workspace-sidebar {
   position: fixed;
   z-index: 20;
-  inset: 0 auto 0 0;
+  inset-block: 0;
+  inset-inline-start: 0;
   display: flex;
   width: 258px;
   flex-direction: column;
@@ -147,7 +148,7 @@
 
 .workspace-main {
   min-height: 100vh;
-  margin-left: 258px;
+  margin-inline-start: 258px;
 }
 
 .workspace-header {
@@ -287,7 +288,7 @@
   }
 
   .workspace-main {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 
   .workspace-header {
@@ -300,7 +301,7 @@
   }
 
   .header-actions {
-    margin-left: auto;
+    margin-inline-start: auto;
   }
 }
 
@@ -341,7 +342,7 @@
 .workspace-sidebar {
   background: #fff;
   color: #5e7180;
-  border-right: 1px solid #e7edf1;
+  border-inline-end: 1px solid #e7edf1;
   width: 236px;
   box-shadow: none;
   padding: 30px 18px 18px;
@@ -370,7 +371,7 @@
   color: #a8b4bc;
   font-size: 9px;
   font-weight: 600;
-  padding-left: 13px;
+  padding-inline-start: 13px;
 }
 .workspace-nav {
   gap: 4px;
@@ -420,7 +421,7 @@
   margin-bottom: 10px;
 }
 .workspace-main {
-  margin-left: 236px;
+  margin-inline-start: 236px;
   background: #f6f8fa;
   min-width: 0;
 }
@@ -484,7 +485,7 @@
 }
 @media (max-width: 900px) {
   .workspace-main {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
   .workspace-content {
     padding: 24px 20px;
@@ -519,5 +520,69 @@
 @media (max-width: 350px) {
   .header-title {
     display: none;
+  }
+}
+
+.header-language {
+  border: 1px solid var(--cp-border, #e7edf1);
+  background: var(--cp-surface, white);
+  color: var(--cp-text, #34564c);
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 12px;
+}
+.profile-photo {
+  object-fit: cover;
+}
+:host-context([dir='rtl']) .workspace-nav a.active {
+  box-shadow: inset -3px 0 var(--cp-green);
+}
+@media (max-width: 900px) {
+  :host-context([dir='rtl']) .workspace-sidebar {
+    transform: translateX(105%);
+  }
+  :host-context([dir='rtl']) .workspace-sidebar.open {
+    transform: translateX(0);
+  }
+}
+@media (max-width: 560px) {
+  .header-language {
+    max-width: 70px;
+    font-size: 11px;
+  }
+  .user-copy {
+    display: block;
+  }
+  .user-copy strong {
+    max-width: 85px;
+  }
+  .header-title {
+    display: none;
+  }
+}
+
+@media (max-width: 350px) {
+  .workspace-header {
+    gap: 4px;
+    padding-inline: 9px;
+  }
+  .header-actions {
+    gap: 2px;
+  }
+  .user-copy strong {
+    max-width: 68px;
+    font-size: 10px;
+  }
+  .user-copy small {
+    font-size: 8px;
+  }
+  .header-notifications {
+    display: none;
+  }
+  .user-summary {
+    gap: 4px;
+  }
+  .header-language {
+    max-width: 66px;
   }
 }

@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, Subject } from 'rxjs';
 
 export interface CurrentUser {
   id: string;
+  imageCover?: string;
   fullName: string;
   email: string;
   isActive: boolean;
@@ -18,6 +19,7 @@ export interface CurrentUser {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly authUrl = '/api/auth';
+  profileChanged = new Subject<CurrentUser>();
 
   login(credentials: { email: string; password: string }): Observable<unknown> {
     return this.http.post(`${this.authUrl}/login`, credentials, { withCredentials: true });

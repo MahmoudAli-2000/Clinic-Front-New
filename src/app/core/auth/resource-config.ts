@@ -101,6 +101,7 @@ export const RESOURCES: Record<string, ResourceConfig> = {
     fields: [
       txt('clinicCode', 'Clinic code', true),
       txt('clinicName', 'Clinic name', true),
+      txt('clinicNameAr', 'Clinic name (Arabic)'),
       ...contact,
       txt('addressLine1', 'Address'),
       txt('addressLine2', 'Address line 2'),
@@ -126,7 +127,9 @@ export const RESOURCES: Record<string, ResourceConfig> = {
     ],
     fields: [
       txt('specialtyName', 'Specialty name', true),
+      txt('specialtyNameAr', 'Specialty name (Arabic)'),
       txt('description', 'Description', false, 'textarea'),
+      txt('descriptionAr', 'Description (Arabic)', false, 'textarea'),
       active,
       image,
     ],
@@ -179,7 +182,9 @@ export const RESOURCES: Record<string, ResourceConfig> = {
     ],
     fields: [
       txt('genericName', 'Generic name', true),
+      txt('genericNameAr', 'Generic name (Arabic)'),
       txt('brandName', 'Brand name'),
+      txt('brandNameAr', 'Brand name (Arabic)'),
       txt('medicationCode', 'Medication code'),
       txt('dosageForm', 'Dosage form'),
       txt('strength', 'Strength'),

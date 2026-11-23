@@ -1,1 +1,12 @@
-<router-outlet></router-outlet>
+<div [dir]="language.currentLang() === 'ar' ? 'rtl' : 'ltr'">
+  <select
+    class="language-switch"
+    aria-label="Language / اللغة"
+    [ngModel]="language.currentLang()"
+    (ngModelChange)="language.setLanguage($event)"
+  >
+    <option value="en">English</option>
+    <option value="ar">العربية</option>
+  </select>
+  <router-outlet></router-outlet>
+</div>

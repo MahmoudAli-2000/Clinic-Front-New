@@ -1,3 +1,4 @@
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +8,7 @@ import { WorkspaceApiService, apiError } from '../../core/services/workspace-api
 @Component({
   selector: 'app-account-recovery',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [UiPipe, CommonModule, FormsModule, RouterLink],
   templateUrl: './account-recovery.component.html',
   styleUrl: './account-recovery.component.css',
 })

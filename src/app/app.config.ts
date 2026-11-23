@@ -1,3 +1,5 @@
+import { provideTransloco } from '@jsverse/transloco';
+import { ClinicTranslationLoader } from './core/i18n/transloco-loader';
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 
@@ -11,17 +13,24 @@ import { authInterceptorInterceptor } from './core/interceptors/auth-interceptor
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes,
-      withInMemoryScrolling({scrollPositionRestoration: 'top'})
-    ), 
-     provideClientHydration(),
+    provideTransloco({
+      config: {
+        availableLangs: ['en', 'ar'],
+        defaultLang: 'en',
+        fallbackLang: 'en',
+        reRenderOnLangChange: true,
+        prodMode: true,
+      },
+      loader: ClinicTranslationLoader,
+    }),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })),
+    provideClientHydration(),
     provideHttpClient(
       // تم إزالة withFetch() لأنها تسبب مشاكل مع Cookies في Cross-site scenarios
       // Fetch API لا يرسل Cookies بشكل موثوق مع SameSite=None و Secure=true
-      withInterceptors([langInterceptor,authInterceptorInterceptor])
+      withInterceptors([langInterceptor, authInterceptorInterceptor])
     ),
     provideToastr(),
-     provideAnimations()
-  
-  ]
+    provideAnimations(),
+  ],
 };

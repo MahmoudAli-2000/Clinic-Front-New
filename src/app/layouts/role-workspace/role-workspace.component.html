@@ -2,7 +2,7 @@
   <button
     class="sidebar-scrim"
     [class.visible]="isMenuOpen"
-    aria-label="Close navigation"
+    [attr.aria-label]="'Close navigation' | ui"
     (click)="closeMenu()"
   ></button>
 
@@ -10,13 +10,13 @@
     <a class="brand" [routerLink]="rolePrefix + '/dashboard'" (click)="closeMenu()">
       <span class="brand-mark"><i class="fas fa-heartbeat"></i></span>
       <span>
-        <strong>CarePoint</strong>
-        <small>Clinic workspace</small>
+        <strong>{{ 'CarePoint' | ui }}</strong>
+        <small>{{ 'Clinic workspace' | ui }}</small>
       </span>
     </a>
 
-    <div class="sidebar-caption">WORKSPACE</div>
-    <nav class="workspace-nav" aria-label="Main navigation">
+    <div class="sidebar-caption">{{ 'WORKSPACE' | ui }}</div>
+    <nav class="workspace-nav" [attr.aria-label]="'Main navigation' | ui">
       <a
         *ngFor="let item of visibleNavigation"
         [routerLink]="item.path"
@@ -25,43 +25,64 @@
         (click)="closeMenu()"
       >
         <i [ngClass]="'fas ' + item.icon"></i>
-        <span>{{ item.label }}</span>
+        <span>{{ item.label | ui }}</span>
       </a>
     </nav>
 
     <div class="sidebar-help">
       <span class="help-icon"><i class="fas fa-shield-heart"></i></span>
-      <strong>Care comes first</strong>
-      <p>Your workspace is tailored to your clinic role.</p>
+      <strong>{{ 'Care comes first' | ui }}</strong>
+      <p>{{ 'Your workspace is tailored to your clinic role.' | ui }}</p>
     </div>
   </aside>
 
   <div class="workspace-main">
     <header class="workspace-header">
-      <button class="menu-toggle" aria-label="Toggle navigation" (click)="isMenuOpen = !isMenuOpen">
+      <button
+        class="menu-toggle"
+        [attr.aria-label]="'Toggle navigation' | ui"
+        (click)="isMenuOpen = !isMenuOpen"
+      >
         <i class="fas fa-bars"></i>
       </button>
       <div class="header-title">
-        <span>CarePoint Clinic</span>
-        <strong>{{ roleLabel }} workspace</strong>
+        <span>{{ 'CarePoint Clinic' | ui }}</span>
+        <strong>{{ roleLabel | ui }} {{ 'workspace' | ui }}</strong>
       </div>
       <div class="header-actions">
+        <select
+          class="header-language"
+          [attr.aria-label]="'Language' | ui"
+          [ngModel]="language.currentLang()"
+          (ngModelChange)="language.setLanguage($event)"
+        >
+          <option value="en">English</option>
+          <option value="ar">العربية</option>
+        </select>
         <a
           class="header-notifications"
           [routerLink]="rolePrefix + '/notifications'"
-          aria-label="Notifications"
+          [attr.aria-label]="'Notifications' | ui"
           ><i class="fas fa-bell"></i
         ></a>
         <div class="user-summary">
-          <span class="user-avatar">{{ initials }}</span>
+          <img
+            *ngIf="currentUser?.imageCover && !photoFailed; else initialsAvatar"
+            class="user-avatar profile-photo"
+            [src]="currentUser?.imageCover"
+            [alt]="currentUser?.fullName"
+            (error)="photoFailed = true"
+          /><ng-template #initialsAvatar
+            ><span class="user-avatar">{{ initials }}</span></ng-template
+          >
           <span class="user-copy">
-            <strong>{{ currentUser?.fullName || 'Clinic user' }}</strong>
-            <small>{{ roleLabel }}</small>
+            <strong>{{ currentUser?.fullName || 'Clinic user' | ui }}</strong>
+            <small>{{ roleLabel | ui }}</small>
           </span>
         </div>
-        <button class="logout-button" (click)="onLogout()" aria-label="Sign out">
+        <button class="logout-button" (click)="onLogout()" [attr.aria-label]="'Sign out' | ui">
           <i class="fas fa-arrow-right-from-bracket"></i>
-          <span>Sign out</span>
+          <span>{{ 'Sign out' | ui }}</span>
         </button>
       </div>
     </header>
@@ -70,8 +91,8 @@
       <router-outlet></router-outlet>
     </main>
     <footer class="workspace-footer">
-      <span>CarePoint Clinic</span>
-      <span>Secure care workspace</span>
+      <span>{{ 'CarePoint Clinic' | ui }}</span>
+      <span>{{ 'Secure care workspace' | ui }}</span>
     </footer>
   </div>
 </div>

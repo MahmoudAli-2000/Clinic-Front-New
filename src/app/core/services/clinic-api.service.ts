@@ -228,13 +228,13 @@ export class ClinicApiService {
 
   searchPatients(pageIndex = 1, pageSize = 10, search = ''): Observable<PagedResponse<PatientListItem>> {
     return this.http.get<PagedResponse<PatientListItem>>(`${this.apiUrl}/Patients`, {
-      params: this.buildParams({ pageIndex, pageSize, search })
+      params: this.buildParams({ pageIndex, pageSize, search }),
     });
   }
 
   searchDoctors(pageIndex = 1, pageSize = 10, search = ''): Observable<PagedResponse<DoctorListItem>> {
     return this.http.get<PagedResponse<DoctorListItem>>(`${this.apiUrl}/Doctors`, {
-      params: this.buildParams({ pageIndex, pageSize, search })
+      params: this.buildParams({ pageIndex, pageSize, search }),
     });
   }
 
@@ -245,19 +245,19 @@ export class ClinicApiService {
     filters: { patientId?: number; doctorId?: number } = {}
   ): Observable<PagedResponse<AppointmentListItem>> {
     return this.http.get<PagedResponse<AppointmentListItem>>(`${this.apiUrl}/Appointments`, {
-      params: this.buildParams({ pageIndex, pageSize, search, ...filters })
+      params: this.buildParams({ pageIndex, pageSize, search, ...filters }),
     });
   }
 
   searchClinics(pageIndex = 1, pageSize = 10, search = ''): Observable<PagedResponse<ClinicListItem>> {
     return this.http.get<PagedResponse<ClinicListItem>>(`${this.apiUrl}/Clinics`, {
-      params: this.buildParams({ pageIndex, pageSize, search })
+      params: this.buildParams({ pageIndex, pageSize, search }),
     });
   }
 
   searchSpecialties(pageIndex = 1, pageSize = 10, search = ''): Observable<PagedResponse<SpecialtyListItem>> {
     return this.http.get<PagedResponse<SpecialtyListItem>>(`${this.apiUrl}/Specialties`, {
-      params: this.buildParams({ pageIndex, pageSize, search })
+      params: this.buildParams({ pageIndex, pageSize, search }),
     });
   }
 
@@ -275,7 +275,7 @@ export class ClinicApiService {
 
   searchStaff(pageIndex = 1, pageSize = 10, search = ''): Observable<PagedResponse<StaffListItem>> {
     return this.http.get<PagedResponse<StaffListItem>>(`${this.apiUrl}/Staffs`, {
-      params: this.buildParams({ pageIndex, pageSize, search })
+      params: this.buildParams({ pageIndex, pageSize, search }),
     });
   }
 
@@ -295,11 +295,17 @@ export class ClinicApiService {
     return this.http.post<PatientListItem>(`${this.apiUrl}/Patients`, this.toFormData(request));
   }
 
-  updatePatient(id: number, request: PatientCreateRequest & { status?: string }): Observable<PatientListItem> {
+  updatePatient(
+    id: number,
+    request: PatientCreateRequest & { status?: string }
+  ): Observable<PatientListItem> {
     return this.http.put<PatientListItem>(`${this.apiUrl}/Patients/${id}`, this.toFormData(request));
   }
 
-  setPatientStatus(id: number, status: 'Active' | 'Inactive' | 'Suspended' | 'Deceased'): Observable<unknown> {
+  setPatientStatus(
+    id: number,
+    status: 'Active' | 'Inactive' | 'Suspended' | 'Deceased'
+  ): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/Patients/${id}/status`, null, { params: { status } });
   }
 
@@ -307,15 +313,21 @@ export class ClinicApiService {
     return this.http.post<AppointmentListItem>(`${this.apiUrl}/Appointments`, request);
   }
 
-  rescheduleAppointment(id: number, scheduledStartAtUtc: string, scheduledEndAtUtc?: string): Observable<AppointmentListItem> {
+  rescheduleAppointment(
+    id: number,
+    scheduledStartAtUtc: string,
+    scheduledEndAtUtc?: string
+  ): Observable<AppointmentListItem> {
     return this.http.put<AppointmentListItem>(`${this.apiUrl}/Appointments/${id}/reschedule`, {
       scheduledStartAtUtc,
-      scheduledEndAtUtc: scheduledEndAtUtc || null
+      scheduledEndAtUtc: scheduledEndAtUtc || null,
     });
   }
 
   cancelAppointment(id: number, reason?: string): Observable<AppointmentListItem> {
-    return this.http.put<AppointmentListItem>(`${this.apiUrl}/Appointments/${id}/cancel`, { cancellationReason: reason || null });
+    return this.http.put<AppointmentListItem>(`${this.apiUrl}/Appointments/${id}/cancel`, {
+      cancellationReason: reason || null,
+    });
   }
 
   confirmAppointment(id: number): Observable<AppointmentListItem> {
@@ -394,17 +406,25 @@ export class ClinicApiService {
     return this.http.post<PrescriptionListItem>(`${this.apiUrl}/Prescriptions`, request);
   }
 
-  updatePrescriptionStatus(id: number, status: 'Active' | 'Completed' | 'Cancelled' | 'Expired'): Observable<PrescriptionListItem> {
-    return this.http.put<PrescriptionListItem>(`${this.apiUrl}/Prescriptions/${id}/status`, null, { params: { status } });
+  updatePrescriptionStatus(
+    id: number,
+    status: 'Active' | 'Completed' | 'Cancelled' | 'Expired'
+  ): Observable<PrescriptionListItem> {
+    return this.http.put<PrescriptionListItem>(`${this.apiUrl}/Prescriptions/${id}/status`, null, {
+      params: { status },
+    });
   }
 
   startVisit(appointmentId: number, chiefComplaint?: string): Observable<VisitListItem> {
     return this.http.post<VisitListItem>(`${this.apiUrl}/Visits/from-appointment/${appointmentId}`, {
-      chiefComplaint: chiefComplaint || null
+      chiefComplaint: chiefComplaint || null,
     });
   }
 
-  completeVisit(id: number, visitUpdate: { chiefComplaint?: string; doctorNotes?: string; status?: string }): Observable<VisitListItem> {
+  completeVisit(
+    id: number,
+    visitUpdate: { chiefComplaint?: string; doctorNotes?: string; status?: string }
+  ): Observable<VisitListItem> {
     return this.http.put<VisitListItem>(`${this.apiUrl}/Visits/${id}/complete`, visitUpdate);
   }
 
@@ -414,7 +434,7 @@ export class ClinicApiService {
 
   getNotifications(pageIndex = 1, pageSize = 5): Observable<PagedResponse<NotificationListItem>> {
     return this.http.get<PagedResponse<NotificationListItem>>(`${this.apiUrl}/Notifications`, {
-      params: this.buildParams({ pageIndex, pageSize })
+      params: this.buildParams({ pageIndex, pageSize }),
     });
   }
 

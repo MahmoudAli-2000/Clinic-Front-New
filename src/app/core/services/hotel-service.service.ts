@@ -4,17 +4,16 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environments';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HotelServiceService {
+  private httpcleint = inject(HttpClient);
 
-  private httpcleint=inject(HttpClient);
-
-  getAllHotels():Observable<any>{
+  getAllHotels(): Observable<any> {
     return this.httpcleint.get(`${environment.BaseUrl}/api/Hotel/client`);
   }
 
-  getAllAdminHotels():Observable<any>{
+  getAllAdminHotels(): Observable<any> {
     return this.httpcleint.get(`${environment.BaseUrl}/api/Hotel/admin`);
   }
 }

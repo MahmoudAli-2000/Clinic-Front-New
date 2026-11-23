@@ -1,29 +1,41 @@
 <section class="care-page">
   <header class="page-heading">
     <div>
-      <span class="eyebrow">PERSONAL HEALTH</span>
-      <h1>{{ pageTitle }}</h1>
-      <p>Access your own clinic information and care records.</p>
+      <span class="eyebrow">{{ 'PERSONAL HEALTH' | ui }}</span>
+      <h1>{{ pageTitle | ui }}</h1>
+      <p>{{ 'Access your own clinic information and care records.' | ui }}</p>
     </div>
-    <span class="secure-mark"><i class="fas fa-lock"></i> Private</span>
+    <span class="secure-mark"><i class="fas fa-lock"></i> {{ 'Private' | ui }}</span>
   </header>
 
   <div *ngIf="isLoading" class="state-card">
     <span class="loader"></span>
-    <span>Loading your records...</span>
+    <span>{{ 'Loading your records...' | ui }}</span>
   </div>
-  <div *ngIf="errorMessage" class="state-card error-state">{{ errorMessage }}</div>
+  <div *ngIf="errorMessage" class="state-card error-state">{{ errorMessage | ui }}</div>
 
   <article *ngIf="!isLoading && section === 'profile' && currentUser" class="profile-card">
-    <div class="profile-avatar">{{ currentUser.fullName.charAt(0) || 'P' }}</div>
+    <div class="profile-avatar">{{ currentUser.fullName.charAt(0) || 'P' | ui }}</div>
     <div class="profile-content">
-      <span class="eyebrow">PATIENT ACCOUNT</span>
-      <h2>{{ currentUser.fullName }}</h2>
+      <span class="eyebrow">{{ 'PATIENT ACCOUNT' | ui }}</span>
+      <h2>{{ currentUser.fullName | ui }}</h2>
       <div class="profile-fields">
-        <div><small>Email address</small><strong>{{ currentUser.email }}</strong></div>
-        <div><small>Account status</small><strong>{{ currentUser.isActive ? 'Active' : 'Inactive' }}</strong></div>
-        <div><small>Patient record</small><strong>{{ currentUser.patientId || 'Not linked' }}</strong></div>
-        <div><small>Email verification</small><strong>{{ currentUser.emailConfirmed ? 'Verified' : 'Not verified' }}</strong></div>
+        <div>
+          <small>{{ 'Email address' | ui }}</small
+          ><strong>{{ currentUser.email | ui }}</strong>
+        </div>
+        <div>
+          <small>{{ 'Account status' | ui }}</small
+          ><strong>{{ (currentUser.isActive ? 'Active' : 'Inactive') | ui }}</strong>
+        </div>
+        <div>
+          <small>{{ 'Patient record' | ui }}</small
+          ><strong>{{ currentUser.patientId || 'Not linked' | ui }}</strong>
+        </div>
+        <div>
+          <small>{{ 'Email verification' | ui }}</small
+          ><strong>{{ (currentUser.emailConfirmed ? 'Verified' : 'Not verified') | ui }}</strong>
+        </div>
       </div>
     </div>
   </article>
@@ -33,18 +45,20 @@
       <div class="record-symbol"><i class="fas fa-notes-medical"></i></div>
       <div class="record-main">
         <div class="record-top">
-          <strong>Visit #{{ visit.id }}</strong>
-          <span class="status-tag">{{ visit.status }}</span>
+          <strong>{{ 'Visit #' | ui }}{{ visit.id | ui }}</strong>
+          <span class="status-tag">{{ visit.status | ui }}</span>
         </div>
-        <p>{{ visit.chiefComplaint || 'Clinic visit' }}</p>
-        <small *ngIf="visit.visitStartAtUtc">Visit date: {{ visit.visitStartAtUtc | date:'medium' }}</small>
-        <small *ngIf="visit.doctorNotes" class="record-notes">{{ visit.doctorNotes }}</small>
+        <p>{{ visit.chiefComplaint || 'Clinic visit' | ui }}</p>
+        <small *ngIf="visit.visitStartAtUtc"
+          >{{ 'Visit date:' | ui }} {{ visit.visitStartAtUtc | clinicDate: 'medium' | ui }}</small
+        >
+        <small *ngIf="visit.doctorNotes" class="record-notes">{{ visit.doctorNotes | ui }}</small>
       </div>
     </article>
     <div *ngIf="!visits.length && !errorMessage" class="empty-card">
       <i class="fas fa-file-medical"></i>
-      <strong>No visit history yet</strong>
-      <span>Completed visits will appear here.</span>
+      <strong>{{ 'No visit history yet' | ui }}</strong>
+      <span>{{ 'Completed visits will appear here.' | ui }}</span>
     </div>
   </div>
 
@@ -53,23 +67,23 @@
       <div class="record-symbol prescription-symbol"><i class="fas fa-prescription"></i></div>
       <div class="record-main">
         <div class="record-top">
-          <strong>Prescription #{{ prescription.id }}</strong>
-          <span class="status-tag">{{ prescription.status }}</span>
+          <strong>{{ 'Prescription #' | ui }}{{ prescription.id | ui }}</strong>
+          <span class="status-tag">{{ prescription.status | ui }}</span>
         </div>
-        <small>Issued {{ prescription.issuedAtUtc | date:'mediumDate' }}</small>
-        <p *ngIf="prescription.notes">{{ prescription.notes }}</p>
+        <small>{{ 'Issued' | ui }} {{ prescription.issuedAtUtc | clinicDate: 'mediumDate' | ui }}</small>
+        <p *ngIf="prescription.notes">{{ prescription.notes | ui }}</p>
         <div *ngIf="prescription.items?.length" class="medication-list">
           <span *ngFor="let medication of prescription.items">
-            {{ medication.medicationName || 'Medication' }}
-            <small *ngIf="medication.dosage"> · {{ medication.dosage }}</small>
+            {{ medication.medicationName || 'Medication' | ui }}
+            <small *ngIf="medication.dosage"> · {{ medication.dosage | ui }}</small>
           </span>
         </div>
       </div>
     </article>
     <div *ngIf="!prescriptions.length && !errorMessage" class="empty-card">
       <i class="fas fa-prescription"></i>
-      <strong>No prescriptions found</strong>
-      <span>Prescriptions associated with your account will appear here.</span>
+      <strong>{{ 'No prescriptions found' | ui }}</strong>
+      <span>{{ 'Prescriptions associated with your account will appear here.' | ui }}</span>
     </div>
   </div>
 </section>

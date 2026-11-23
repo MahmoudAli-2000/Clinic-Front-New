@@ -1,3 +1,5 @@
+import { ClinicDatePipe } from '../../core/pipes/clinic-date.pipe';
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +12,7 @@ import { EntityFormComponent } from '../../shared/entity-form/entity-form.compon
 @Component({
   selector: 'app-clinical-chart',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, EntityFormComponent],
+  imports: [ClinicDatePipe, UiPipe, CommonModule, FormsModule, RouterLink, EntityFormComponent],
   templateUrl: './clinical-chart.component.html',
   styleUrl: './clinical-chart.component.css',
 })

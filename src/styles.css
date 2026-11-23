@@ -118,7 +118,7 @@ a {
 .cp-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
+  text-align: start;
   min-width: 650px;
 }
 .cp-table th {
@@ -563,3 +563,7 @@ html[data-theme='dark'] .cp-pill {
 html[data-theme='dark'] .skeleton-row {
   background: linear-gradient(90deg, #203341, #2b4152, #203341);
 }
+
+html[dir="rtl"] body { font-family: Tahoma, Arial, sans-serif; letter-spacing:normal; }
+[dir="rtl"] .cp-table th, [dir="rtl"] .cp-table td { text-align:start; }
+input[type="email"],input[type="tel"],input[type="password"],input[type="datetime-local"],input[type="date"],input[type="time"] { direction:ltr; text-align:start; }

@@ -37,3 +37,5 @@ SQL Server migrations and indexes, concurrent bookings under real SQL transactio
 Build warning: Bootstrap's unused `.form-floating` selector is skipped by CSS optimization. This does not affect the clinic form components. npm's browser-baseline dataset warning is advisory. Angular 17 is retained to meet the existing project architecture; plan a separately tested framework upgrade for long-term support.
 
 Dependency audit details: [DEPENDENCY-AUDIT.md](DEPENDENCY-AUDIT.md). Current production dependency audit after removing unused packages: 18 findings (2 critical, 11 high, 5 moderate). Do not deploy for real patient data before reviewing these.
+
+Bilingual checkpoint: 33 browser tests pass, including locale switching, RTL width checks, public authentication translation, profile image and fallback. Backend now has 11 passing API host checks. See BILINGUAL-SETUP.md.

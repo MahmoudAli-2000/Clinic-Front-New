@@ -1,9 +1,9 @@
 <section class="cp-page">
   <header class="page-heading">
     <div>
-      <span class="cp-eyebrow">CAREPOINT / {{ section | uppercase }}</span>
-      <h1>{{ title }}</h1>
-      <p>Stay connected to your care, your team and your clinic.</p>
+      <span class="cp-eyebrow">{{ 'CAREPOINT /' | ui }} {{ section | ui }}</span>
+      <h1>{{ title | ui }}</h1>
+      <p>{{ 'Stay connected to your care, your team and your clinic.' | ui }}</p>
     </div>
     <button
       *ngIf="section === 'notifications'"
@@ -11,48 +11,62 @@
       (click)="markRead()"
       [disabled]="busy"
     >
-      Mark all as read</button
-    ><button *ngIf="section === 'prescriptions'" class="cp-button secondary" (click)="print()">
-      Print prescriptions
+      {{ 'Mark all as read' | ui }}</button><button
+      *ngIf="section === 'prescriptions'"
+      class="cp-button secondary"
+      (click)="print()"
+    >
+      {{ 'Print prescriptions' | ui }}
     </button>
   </header>
-  <div class="cp-alert error" *ngIf="error" role="alert">{{ error }}</div>
-  <div class="cp-alert success" *ngIf="success" role="status">{{ success }}</div>
+  <div class="cp-alert error" *ngIf="error" role="alert">{{ error | ui }}</div>
+  <div class="cp-alert success" *ngIf="success" role="status">{{ success | ui }}</div>
   <div class="skeleton-list" *ngIf="loading">
     <div class="skeleton-row" *ngFor="let n of [1, 2, 3]"></div>
   </div>
   <ng-container [ngSwitch]="section" *ngIf="!loading">
     <div *ngSwitchCase="'settings'" class="settings-grid">
       <section class="cp-card settings-panel">
-        <span class="cp-eyebrow">YOUR ACCOUNT</span>
-        <h2>Personal information</h2>
+        <span class="cp-eyebrow">{{ 'YOUR ACCOUNT' | ui }}</span>
+        <h2>{{ 'Personal information' | ui }}</h2>
+        <label class="photo-upload"
+          >{{ 'Profile photo' | ui
+          }}<input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            [disabled]="busy"
+            (change)="uploadPhoto($event)"
+        /></label>
+        <p class="muted-copy">{{ 'JPEG, PNG or WebP. Maximum 2 MB.' | ui }}</p>
         <form #profileForm="ngForm" (ngSubmit)="profileForm.valid && saveSettings('profile')">
           <label
-            >Full name<input
-              [(ngModel)]="profile['fullName']"
-              name="fullName"
-              required
-              maxlength="150" /></label
+            >{{ 'Full name' | ui
+            }}<input [(ngModel)]="profile['fullName']" name="fullName" required maxlength="150" /></label
           ><label
-            >Phone number<input type="tel" [(ngModel)]="profile['phoneNumber']" name="phoneNumber"
+            >{{ 'Phone number' | ui
+            }}<input type="tel" [(ngModel)]="profile['phoneNumber']" name="phoneNumber"
           /></label>
-          <p class="muted-copy">{{ user?.email }} · {{ user?.roles?.join(', ') }}</p>
-          <button class="cp-button" [disabled]="busy || profileForm.invalid">Save profile</button>
+          <p class="muted-copy">{{ user?.email | ui }} · {{ user?.roles?.join(', ') | ui }}</p>
+          <button class="cp-button" [disabled]="busy || profileForm.invalid">
+            {{ 'Save profile' | ui }}
+          </button>
         </form>
       </section>
       <section class="cp-card settings-panel">
-        <span class="cp-eyebrow">SECURITY</span>
-        <h2>Change password</h2>
+        <span class="cp-eyebrow">{{ 'SECURITY' | ui }}</span>
+        <h2>{{ 'Change password' | ui }}</h2>
         <form #passwordForm="ngForm" (ngSubmit)="passwordForm.valid && saveSettings('password')">
           <label
-            >Current password<input
+            >{{ 'Current password' | ui
+            }}<input
               type="password"
               [(ngModel)]="password['currentPassword']"
               name="currentPassword"
               required
               autocomplete="current-password" /></label
           ><label
-            >New password<input
+            >{{ 'New password' | ui
+            }}<input
               type="password"
               [(ngModel)]="password['newPassword']"
               name="newPassword"
@@ -60,156 +74,155 @@
               minlength="6"
               autocomplete="new-password"
           /></label>
-          <p class="muted-copy">Use uppercase, lowercase and a number. At least 6 characters.</p>
-          <button class="cp-button" [disabled]="busy || passwordForm.invalid">Change password</button>
+          <p class="muted-copy">{{ 'Use uppercase, lowercase and a number. At least 6 characters.' | ui }}</p>
+          <button class="cp-button" [disabled]="busy || passwordForm.invalid">
+            {{ 'Change password' | ui }}
+          </button>
         </form>
       </section>
       <section class="cp-card settings-panel appearance-panel">
-        <span class="cp-eyebrow">MAKE IT YOURS</span>
-        <h2>Appearance &amp; personal style</h2>
+        <span class="cp-eyebrow">{{ 'MAKE IT YOURS' | ui }}</span>
+        <h2>{{ 'Appearance & personal style' | ui }}</h2>
         <p class="muted-copy">
-          Saved to your own account. Changes preview instantly. Other users keep their own settings.
+          {{
+            'Saved to your own account. Changes preview instantly. Other users keep their own settings.' | ui
+          }}
         </p>
         <form (ngSubmit)="saveAppearance()" class="appearance-form">
           <label
-            >Theme mode<select [(ngModel)]="appearance.mode" name="mode" (change)="previewAppearance()">
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="system">Match device</option>
+            >{{ 'Theme mode' | ui
+            }}<select [(ngModel)]="appearance.mode" name="mode" (change)="previewAppearance()">
+              <option value="light">{{ 'Light' | ui }}</option>
+              <option value="dark">{{ 'Dark' | ui }}</option>
+              <option value="system">{{ 'Match device' | ui }}</option>
             </select></label
           >
           <label
-            >Accent color<input
-              type="color"
-              [(ngModel)]="appearance.accent"
-              name="accent"
-              (input)="previewAppearance()"
+            >{{ 'Accent color' | ui
+            }}<input type="color" [(ngModel)]="appearance.accent" name="accent" (input)="previewAppearance()"
           /></label>
           <label
-            >Layout density<select
-              [(ngModel)]="appearance.density"
-              name="density"
-              (change)="previewAppearance()"
-            >
-              <option value="comfortable">Comfortable</option>
-              <option value="compact">Compact</option>
+            >{{ 'Layout density' | ui
+            }}<select [(ngModel)]="appearance.density" name="density" (change)="previewAppearance()">
+              <option value="comfortable">{{ 'Comfortable' | ui }}</option>
+              <option value="compact">{{ 'Compact' | ui }}</option>
             </select></label
           >
           <label
-            >Corner style<select
-              [(ngModel)]="appearance.corners"
-              name="corners"
-              (change)="previewAppearance()"
-            >
-              <option value="rounded">Rounded</option>
-              <option value="soft">Soft</option>
-              <option value="square">Square</option>
+            >{{ 'Corner style' | ui
+            }}<select [(ngModel)]="appearance.corners" name="corners" (change)="previewAppearance()">
+              <option value="rounded">{{ 'Rounded' | ui }}</option>
+              <option value="soft">{{ 'Soft' | ui }}</option>
+              <option value="square">{{ 'Square' | ui }}</option>
             </select></label
           >
           <label
-            >Text size<select
-              [(ngModel)]="appearance.textSize"
-              name="textSize"
-              (change)="previewAppearance()"
-            >
-              <option value="default">Default</option>
-              <option value="large">Larger</option>
+            >{{ 'Text size' | ui
+            }}<select [(ngModel)]="appearance.textSize" name="textSize" (change)="previewAppearance()">
+              <option value="default">{{ 'Default' | ui }}</option>
+              <option value="large">{{ 'Larger' | ui }}</option>
             </select></label
           >
           <label
-            >Font style<select [(ngModel)]="appearance.font" name="font" (change)="previewAppearance()">
-              <option value="system">Modern system</option>
-              <option value="serif">Classic serif</option>
-              <option value="mono">Monospace</option>
+            >{{ 'Font style' | ui
+            }}<select [(ngModel)]="appearance.font" name="font" (change)="previewAppearance()">
+              <option value="system">{{ 'Modern system' | ui }}</option>
+              <option value="serif">{{ 'Classic serif' | ui }}</option>
+              <option value="mono">{{ 'Monospace' | ui }}</option>
             </select></label
           >
           <div class="appearance-actions">
             <button class="cp-button secondary" type="button" (click)="resetAppearance()">
-              Reset preview</button
-            ><button class="cp-button" [disabled]="busy">Save appearance</button>
+              {{ 'Reset preview' | ui }}</button><button class="cp-button" [disabled]="busy">
+              {{ 'Save appearance' | ui }}
+            </button>
           </div>
         </form>
       </section>
       <section class="cp-card settings-panel preference-panel">
-        <span class="cp-eyebrow">YOUR PREFERENCES</span>
-        <h2>Keep in touch, your way</h2>
+        <span class="cp-eyebrow">{{ 'YOUR PREFERENCES' | ui }}</span>
+        <h2>{{ 'Keep in touch, your way' | ui }}</h2>
         <p class="muted-copy">
-          Delivery channels depend on the clinic's configured providers. In-app notifications are supported by
-          this backend.
+          {{
+            "Delivery channels depend on the clinic's configured providers. In-app notifications are supported by this backend."
+              | ui
+          }}
         </p>
         <form (ngSubmit)="saveSettings('preferences')">
           <div class="preference-grid">
             <label *ngFor="let key of preferenceKeys" class="toggle-row"
-              ><span>{{ label(key) }}</span
+              ><span>{{ label(key) | ui }}</span
               ><input type="checkbox" [(ngModel)]="preferences[key]" [name]="key"
             /></label>
           </div>
-          <button class="cp-button" [disabled]="busy">Save preferences</button>
+          <button class="cp-button" [disabled]="busy">{{ 'Save preferences' | ui }}</button>
         </form>
       </section>
     </div>
     <div *ngSwitchCase="'notifications'" class="cp-card notifications">
       <div class="panel-toolbar">
         <label
-          ><input type="checkbox" [(ngModel)]="unreadOnly" (change)="page = 1; load()" /> Unread only</label
-        ><span>{{ total }} notifications</span>
+          ><input type="checkbox" [(ngModel)]="unreadOnly" (change)="page = 1; load()" />
+          {{ 'Unread only' | ui }}</label
+        ><span>{{ total | ui }} {{ 'notifications' | ui }}</span>
       </div>
       <article *ngFor="let row of rows" class="notification-row" [class.unread]="!row['readAtUtc']">
         <span class="notification-icon"><i class="fas fa-bell"></i></span>
         <div>
-          <h2>{{ row['title'] }}</h2>
-          <p>{{ row['message'] }}</p>
-          <small>{{ row['createdAtUtc'] | date: 'medium' }} · {{ row['channel'] }}</small>
+          <h2>{{ row['title'] | ui }}</h2>
+          <p>{{ row['message'] | ui }}</p>
+          <small>{{ row['createdAtUtc'] | clinicDate: 'medium' | ui }} · {{ row['channel'] | ui }}</small>
         </div>
-        <button class="text-button" *ngIf="!row['readAtUtc']" (click)="markRead(row)">Mark read</button>
+        <button class="text-button" *ngIf="!row['readAtUtc']" (click)="markRead(row)">
+          {{ 'Mark read' | ui }}
+        </button>
       </article>
       <div *ngIf="!rows.length" class="cp-empty">
-        <h2>You're all caught up</h2>
-        <p>New clinic updates will appear here.</p>
+        <h2>{{ "You're all caught up" | ui }}</h2>
+        <p>{{ 'New clinic updates will appear here.' | ui }}</p>
       </div>
       <div class="panel-toolbar">
         <button class="cp-button secondary" [disabled]="page <= 1" (click)="page = page - 1; load()">
-          Previous</button
-        ><span>Page {{ page }}</span
+          {{ 'Previous' | ui }}</button><span>{{ 'Page' | ui }} {{ page | ui }}</span
         ><button
           class="cp-button secondary"
           [disabled]="page * 10 >= total"
           (click)="page = page + 1; load()"
         >
-          Next
+          {{ 'Next' | ui }}
         </button>
       </div>
     </div>
     <div *ngSwitchCase="'time-off'" class="cp-card">
       <div class="panel-toolbar">
-        <select [(ngModel)]="doctorId" (change)="load()" aria-label="Doctor">
+        <select [(ngModel)]="doctorId" (change)="load()" [attr.aria-label]="'Doctor' | ui">
           <option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">
-            {{ doctor['fullName'] }}
+            {{ doctor['fullName'] | ui }}
           </option></select
-        ><a routerLink="/admin/schedules" class="text-button">Schedules & add time off</a>
+        ><a routerLink="/admin/schedules" class="text-button">{{ 'Schedules & add time off' | ui }}</a>
       </div>
       <div class="table-scroll">
         <table class="cp-table">
           <thead>
             <tr>
-              <th>Start</th>
-              <th>End</th>
-              <th>Reason</th>
-              <th>Status</th>
+              <th>{{ 'Start' | ui }}</th>
+              <th>{{ 'End' | ui }}</th>
+              <th>{{ 'Reason' | ui }}</th>
+              <th>{{ 'Status' | ui }}</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let row of rows">
-              <td>{{ row['startAtUtc'] | date: 'medium' }}</td>
-              <td>{{ row['endAtUtc'] | date: 'medium' }}</td>
-              <td>{{ row['reason'] || '-' }}</td>
+              <td>{{ row['startAtUtc'] | clinicDate: 'medium' | ui }}</td>
+              <td>{{ row['endAtUtc'] | clinicDate: 'medium' | ui }}</td>
+              <td>{{ row['reason'] || '-' | ui }}</td>
               <td>
-                <span class="cp-pill">{{ row['status'] }}</span>
+                <span class="cp-pill">{{ row['status'] | ui }}</span>
               </td>
               <td>
                 <button *ngIf="desk" class="text-button danger" (click)="removeTimeOff(row['id'])">
-                  Delete
+                  {{ 'Delete' | ui }}
                 </button>
               </td>
             </tr>
@@ -217,21 +230,33 @@
         </table>
       </div>
       <div class="cp-empty" *ngIf="!rows.length">
-        <h2>No time off recorded</h2>
-        <p>This doctor's calendar has no leave entries.</p>
+        <h2>{{ 'No time off recorded' | ui }}</h2>
+        <p>{{ "This doctor's calendar has no leave entries." | ui }}</p>
       </div>
     </div>
     <div *ngSwitchCase="'reviews'">
       <div class="cp-card panel-toolbar">
-        <select [(ngModel)]="reviewType" (change)="load()" aria-label="Review type">
-          <option value="doctor">Doctor feedback</option>
-          <option value="clinic">Clinic feedback</option></select
-        ><select *ngIf="reviewType === 'doctor'" [(ngModel)]="doctorId" (change)="load()" aria-label="Doctor">
+        <select [(ngModel)]="reviewType" (change)="load()" [attr.aria-label]="'Review type' | ui">
+          <option value="doctor">{{ 'Doctor feedback' | ui }}</option>
+          <option value="clinic">{{ 'Clinic feedback' | ui }}</option></select
+        ><select
+          *ngIf="reviewType === 'doctor'"
+          [(ngModel)]="doctorId"
+          (change)="load()"
+          [attr.aria-label]="'Doctor' | ui"
+        >
           <option *ngFor="let doctor of doctors" [ngValue]="doctor['id']">
-            {{ doctor['fullName'] }}
+            {{ doctor['fullName'] | ui }}
           </option></select
-        ><select *ngIf="reviewType === 'clinic'" [(ngModel)]="clinicId" (change)="load()" aria-label="Clinic">
-          <option *ngFor="let clinic of clinics" [ngValue]="clinic['id']">{{ clinic['clinicName'] }}</option>
+        ><select
+          *ngIf="reviewType === 'clinic'"
+          [(ngModel)]="clinicId"
+          (change)="load()"
+          [attr.aria-label]="'Clinic' | ui"
+        >
+          <option *ngFor="let clinic of clinics" [ngValue]="clinic['id']">
+            {{ clinic['clinicName'] | ui }}
+          </option>
         </select>
       </div>
       <div class="rating-overview">
@@ -239,42 +264,43 @@
           *ngFor="let key of ['averageDoctorRating', 'averageClinicRating', 'averageStaffRating']"
           class="cp-card"
         >
-          <span>{{ label(key) }}</span><strong
-            >{{ stats[key] ? (stats[key] | number: '1.1-1') : '-' }} <small>/ 5</small></strong
+          <span>{{ label(key) | ui }}</span><strong
+            >{{ (stats[key] ? (stats[key] | number: '1.1-1') : '-') | ui }} <small>/ 5</small></strong
           >
         </div>
       </div>
       <div class="review-grid">
         <article class="cp-card review" *ngFor="let row of rows">
           <div class="review-stars">
-            ★ {{ row['doctorRating'] || row['clinicRating'] || row['staffRating'] }} / 5
+            ★ {{ row['doctorRating'] || row['clinicRating'] || row['staffRating'] | ui }} / 5
           </div>
-          <p>{{ row['comment'] || 'No written feedback.' }}</p>
+          <p>{{ row['comment'] || 'No written feedback.' | ui }}</p>
           <small
-            >{{ row['isAnonymous'] ? 'Anonymous patient' : 'Patient feedback' }} ·
-            {{ row['reviewedAtUtc'] | date: 'mediumDate' }}</small
+            >{{ (row['isAnonymous'] ? 'Anonymous patient' : 'Patient feedback') | ui }} ·
+            {{ row['reviewedAtUtc'] | clinicDate: 'mediumDate' | ui }}</small
           >
         </article>
       </div>
       <div class="cp-card cp-empty" *ngIf="!rows.length">
-        <h2>No feedback yet</h2>
-        <p>Patients can review completed appointments from their appointment list.</p>
+        <h2>{{ 'No feedback yet' | ui }}</h2>
+        <p>{{ 'Patients can review completed appointments from their appointment list.' | ui }}</p>
       </div>
     </div>
     <div *ngSwitchCase="'prescriptions'">
       <form *ngIf="clinical && !user?.doctorId" (ngSubmit)="load()" class="cp-card panel-toolbar">
         <label
-          >Patient ID <input type="number" min="1" [(ngModel)]="patientId" name="patientId" required /></label
-        ><button class="cp-button">Load prescriptions</button>
+          >{{ 'Patient ID' | ui }}
+          <input type="number" min="1" [(ngModel)]="patientId" name="patientId" required /></label
+        ><button class="cp-button">{{ 'Load prescriptions' | ui }}</button>
       </form>
       <article class="cp-card prescription" *ngFor="let row of rows">
         <header>
           <div>
-            <span class="cp-eyebrow">PRESCRIPTION #{{ row['id'] }}</span>
-            <h2>Visit #{{ row['visitId'] }}</h2>
+            <span class="cp-eyebrow">{{ 'PRESCRIPTION #' | ui }}{{ row['id'] | ui }}</span>
+            <h2>{{ 'Visit #' | ui }}{{ row['visitId'] | ui }}</h2>
             <p>
-              {{ row['issuedAtUtc'] | date: 'mediumDate' }} ·
-              <span class="cp-pill" [attr.data-status]="row['status']">{{ row['status'] }}</span>
+              {{ row['issuedAtUtc'] | clinicDate: 'mediumDate' | ui }} ·
+              <span class="cp-pill" [attr.data-status]="row['status']">{{ row['status'] | ui }}</span>
             </p>
           </div>
           <button
@@ -282,50 +308,50 @@
             *ngIf="clinical && row['status'] !== 'Completed'"
             (click)="openStatus(row)"
           >
-            Update status
+            {{ 'Update status' | ui }}
           </button>
         </header>
         <div class="table-scroll">
           <table class="cp-table">
             <thead>
               <tr>
-                <th>Medication</th>
-                <th>Dose</th>
-                <th>Frequency</th>
-                <th>Days</th>
-                <th>Route</th>
-                <th>Quantity</th>
-                <th>Instructions</th>
+                <th>{{ 'Medication' | ui }}</th>
+                <th>{{ 'Dose' | ui }}</th>
+                <th>{{ 'Frequency' | ui }}</th>
+                <th>{{ 'Days' | ui }}</th>
+                <th>{{ 'Route' | ui }}</th>
+                <th>{{ 'Quantity' | ui }}</th>
+                <th>{{ 'Instructions' | ui }}</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of row['items']">
-                <td>{{ item.medicationName }}</td>
-                <td>{{ item.dose || '-' }}</td>
-                <td>{{ item.frequency || '-' }}</td>
-                <td>{{ item.durationDays || '-' }}</td>
-                <td>{{ item.route || '-' }}</td>
-                <td>{{ item.quantity || '-' }}</td>
-                <td>{{ item.instructions || '-' }}</td>
+                <td>{{ item.medicationName | ui }}</td>
+                <td>{{ item.dose || '-' | ui }}</td>
+                <td>{{ item.frequency || '-' | ui }}</td>
+                <td>{{ item.durationDays || '-' | ui }}</td>
+                <td>{{ item.route || '-' | ui }}</td>
+                <td>{{ item.quantity || '-' | ui }}</td>
+                <td>{{ item.instructions || '-' | ui }}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p class="rx-notes">{{ row['notes'] }}</p>
+        <p class="rx-notes">{{ row['notes'] | ui }}</p>
       </article>
       <div class="cp-card cp-empty" *ngIf="!rows.length">
-        <h2>No prescriptions to display</h2>
-        <p>Prescriptions issued by your doctor will appear here.</p>
+        <h2>{{ 'No prescriptions to display' | ui }}</h2>
+        <p>{{ 'Prescriptions issued by your doctor will appear here.' | ui }}</p>
       </div>
     </div>
   </ng-container>
   <div class="cp-overlay" *ngIf="modal">
     <section class="cp-modal" role="dialog" aria-modal="true" [attr.aria-label]="modalTitle">
       <header>
-        <h2>{{ modalTitle }}</h2>
-        <button class="icon-button" (click)="modal = false" aria-label="Close">×</button>
+        <h2>{{ modalTitle | ui }}</h2>
+        <button class="icon-button" (click)="modal = false" [attr.aria-label]="'Close' | ui">×</button>
       </header>
-      <div *ngIf="error" class="cp-alert error">{{ error }}</div>
+      <div *ngIf="error" class="cp-alert error">{{ error | ui }}</div>
       <app-entity-form
         [fields]="fields"
         [value]="value"

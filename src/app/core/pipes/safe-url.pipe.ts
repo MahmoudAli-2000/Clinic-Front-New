@@ -3,10 +3,9 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Pipe({
   name: 'safeUrl',
-  standalone: true
+  standalone: true,
 })
 export class SafeUrlPipe implements PipeTransform {
-
   constructor(private sanitizer: DomSanitizer) {}
 
   transform(url: string | null | undefined): SafeResourceUrl {
@@ -32,5 +31,4 @@ export class SafeUrlPipe implements PipeTransform {
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
     return this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
   }
-
 }

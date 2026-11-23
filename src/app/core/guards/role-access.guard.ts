@@ -18,7 +18,7 @@ export const roleAccessGuard: CanActivateFn = (route) => {
   }
 
   return authService.currentUser().pipe(
-    map((user) => hasAnyRole(user.roles, allowedRoles) ? true : router.createUrlTree(['/admin/dashboard'])),
+    map((user) => (hasAnyRole(user.roles, allowedRoles) ? true : router.createUrlTree(['/admin/dashboard']))),
     catchError(() => of(router.createUrlTree(['/admin/login'])))
   );
 };

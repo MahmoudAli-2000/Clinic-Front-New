@@ -9,7 +9,7 @@ describe('AuthService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -32,7 +32,17 @@ describe('AuthService', () => {
 
     const req = httpMock.expectOne('/api/auth/me');
     expect(req.request.method).toBe('GET');
-    req.flush({ id: '1', fullName: 'Test User', email: 'test@example.com', isActive: true, emailConfirmed: true, roles: ['Admin'], patientId: null, staffId: null, doctorId: null });
+    req.flush({
+      id: '1',
+      fullName: 'Test User',
+      email: 'test@example.com',
+      isActive: true,
+      emailConfirmed: true,
+      roles: ['Admin'],
+      patientId: null,
+      staffId: null,
+      doctorId: null,
+    });
 
     expect(result).toBeTrue();
   });

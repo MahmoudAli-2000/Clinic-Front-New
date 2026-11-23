@@ -18,10 +18,9 @@ export const authGuardGuard: CanActivateFn = (route: ActivatedRouteSnapshot, sta
       }
 
       router.navigate(['/admin/login'], {
-        queryParams: { returnUrl: state.url }
+        queryParams: { returnUrl: state.url },
       });
       return false;
     })
   );
 };
-

@@ -82,3 +82,7 @@ Affected packages:
   - qs : qs.stringify with arrayFormat 'comma' throws an uncaught TypeError on array elements carrying a non-callable own toString (DoS): https://github.com/advisories/GHSA-6pq8-jhm2-2vcw
 - source-map-js: high
   - source-map-js allows event-loop denial of service through indexed source-map section offsets: https://github.com/advisories/GHSA-68fv-2mgg-jv7q
+
+## Bilingual update audit
+
+After adding Transloco 7 and Angular CDK 17, `npm audit --omit=dev` reports 22 findings: 2 critical, 11 high, 9 moderate. This supersedes the earlier 18-count snapshot. Major dependency upgrades remain a separate production readiness requirement.

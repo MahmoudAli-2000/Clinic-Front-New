@@ -1,21 +1,20 @@
-import { ITour } from "./itour"
+import { ITour } from './itour';
 
 export interface IDestnation {
-  id: number
-  imageCover: string
-  isActive: boolean
-  names: string
-  descriptions: string
-  referneceName: string
+  id: number;
+  imageCover: string;
+  isActive: boolean;
+  names: string;
+  descriptions: string;
+  referneceName: string;
 }
 
 export interface IdetailedDestnaion {
-  id: number
-  imageCover: string
-  isActive: boolean
-  names: string
-  descriptions: string
-  referneceName: string
-  tours: ITour[]
+  id: number;
+  imageCover: string;
+  isActive: boolean;
+  names: string;
+  descriptions: string;
+  referneceName: string;
+  tours: ITour[];
 }
-

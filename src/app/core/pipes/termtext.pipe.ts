@@ -2,12 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'termtext',
-  standalone: true
+  standalone: true,
 })
 export class TermtextPipe implements PipeTransform {
-
-  transform(text:string): string {
-    return text.split(" ",5).join(" ");
+  transform(text: string): string {
+    return text.split(' ', 5).join(' ');
   }
-
 }

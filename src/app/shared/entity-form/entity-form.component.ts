@@ -1,3 +1,4 @@
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -5,7 +6,7 @@ import { FormField, RecordData } from '../../core/interfaces/workspace';
 @Component({
   selector: 'app-entity-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [UiPipe, CommonModule, FormsModule],
   templateUrl: './entity-form.component.html',
   styleUrl: './entity-form.component.css',
 })

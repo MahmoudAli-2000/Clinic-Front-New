@@ -1,38 +1,46 @@
 <section class="register-page">
   <div class="register-intro">
     <span class="intro-icon"><i class="fas fa-heart-pulse"></i></span>
-    <span class="eyebrow">CAREPOINT CLINIC</span>
-    <h1>Better care starts with staying connected.</h1>
-    <p>Create your clinic account to keep your appointments and care information in one place.</p>
+    <span class="eyebrow">{{ 'CAREPOINT CLINIC' | ui }}</span>
+    <h1>{{ 'Better care starts with staying connected.' | ui }}</h1>
+    <p>
+      {{ 'Create your clinic account to keep your appointments and care information in one place.' | ui }}
+    </p>
   </div>
 
   <div class="register-card">
     <div class="card-heading">
       <span class="brand-mark"><i class="fas fa-user-plus"></i></span>
-      <span class="eyebrow">GET STARTED</span>
-      <h2>Create your account</h2>
-      <p>Enter your details below to set up your account.</p>
+      <span class="eyebrow">{{ 'GET STARTED' | ui }}</span>
+      <h2>{{ 'Create your account' | ui }}</h2>
+      <p>{{ 'Enter your details below to set up your account.' | ui }}</p>
     </div>
 
     <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" novalidate>
       <div class="form-field">
-        <label for="fullName">Full name</label>
+        <label for="fullName">{{ 'Full name' | ui }}</label>
         <input
           id="fullName"
           type="text"
           formControlName="fullName"
           autocomplete="name"
-          placeholder="Your full name"
+          [placeholder]="'Your full name' | ui"
           [ngClass]="{
-            'is-invalid': registrationForm.get('fullName')?.invalid && (registrationForm.get('fullName')?.touched || registrationForm.get('fullName')?.dirty)
-          }">
-        @if (registrationForm.get('fullName')?.invalid && (registrationForm.get('fullName')?.touched || registrationForm.get('fullName')?.dirty)) {
-          <small class="field-error">Enter your full name (at least 3 characters).</small>
+            'is-invalid':
+              registrationForm.get('fullName')?.invalid &&
+              (registrationForm.get('fullName')?.touched || registrationForm.get('fullName')?.dirty),
+          }"
+        />
+        @if (
+          registrationForm.get('fullName')?.invalid &&
+          (registrationForm.get('fullName')?.touched || registrationForm.get('fullName')?.dirty)
+        ) {
+          <small class="field-error">{{ 'Enter your full name (at least 3 characters).' | ui }}</small>
         }
       </div>
 
       <div class="form-field">
-        <label for="email">Email address</label>
+        <label for="email">{{ 'Email address' | ui }}</label>
         <input
           id="email"
           type="email"
@@ -40,41 +48,59 @@
           autocomplete="email"
           placeholder="name@example.com"
           [ngClass]="{
-            'is-invalid': registrationForm.get('email')?.invalid && (registrationForm.get('email')?.touched || registrationForm.get('email')?.dirty)
-          }">
-        @if (registrationForm.get('email')?.invalid && (registrationForm.get('email')?.touched || registrationForm.get('email')?.dirty)) {
-          <small class="field-error">Enter a valid email address.</small>
+            'is-invalid':
+              registrationForm.get('email')?.invalid &&
+              (registrationForm.get('email')?.touched || registrationForm.get('email')?.dirty),
+          }"
+        />
+        @if (
+          registrationForm.get('email')?.invalid &&
+          (registrationForm.get('email')?.touched || registrationForm.get('email')?.dirty)
+        ) {
+          <small class="field-error">{{ 'Enter a valid email address.' | ui }}</small>
         }
       </div>
 
       <div class="form-field">
-        <label for="password">Password</label>
+        <label for="password">{{ 'Password' | ui }}</label>
         <input
           id="password"
           type="password"
           formControlName="password"
           autocomplete="new-password"
-          placeholder="Create a password"
+          [placeholder]="'Create a password' | ui"
           [ngClass]="{
-            'is-invalid': registrationForm.get('password')?.invalid && (registrationForm.get('password')?.touched || registrationForm.get('password')?.dirty)
-          }">
-        <small class="field-hint">Use at least 6 characters.</small>
-        @if (registrationForm.get('password')?.invalid && (registrationForm.get('password')?.touched || registrationForm.get('password')?.dirty)) {
-          <small class="field-error">Password must contain at least 6 characters.</small>
+            'is-invalid':
+              registrationForm.get('password')?.invalid &&
+              (registrationForm.get('password')?.touched || registrationForm.get('password')?.dirty),
+          }"
+        />
+        <small class="field-hint">{{ 'Use at least 6 characters.' | ui }}</small>
+        @if (
+          registrationForm.get('password')?.invalid &&
+          (registrationForm.get('password')?.touched || registrationForm.get('password')?.dirty)
+        ) {
+          <small class="field-error">{{ 'Password must contain at least 6 characters.' | ui }}</small>
         }
       </div>
 
       <button class="submit-button" type="submit" [disabled]="Isloading">
-        <span>{{ Isloading ? 'Creating account...' : 'Create account' }}</span>
+        <span>{{ (Isloading ? 'Creating account...' : 'Create account') | ui }}</span>
         <i *ngIf="!Isloading" class="fas fa-arrow-right"></i>
       </button>
 
-      <div *ngIf="msError" class="error-message" role="alert">{{ msError }}</div>
-      <div *ngIf="IsSccuess" class="success-message" role="status">Account created. Redirecting to sign in...</div>
+      <div *ngIf="msError" class="error-message" role="alert">{{ msError | ui }}</div>
+      <div *ngIf="IsSccuess" class="success-message" role="status">
+        {{ 'Account created. Redirecting to sign in...' | ui }}
+      </div>
 
-      <p class="signin-link">Already have an account? <a routerLink="/admin/login">Sign in</a></p>
+      <p class="signin-link">
+        {{ 'Already have an account?' | ui }} <a routerLink="/admin/login">{{ 'Sign in' | ui }}</a>
+      </p>
     </form>
 
-    <div class="secure-footer"><i class="fas fa-shield-halved"></i> Your account details are protected.</div>
+    <div class="secure-footer">
+      <i class="fas fa-shield-halved"></i> {{ 'Your account details are protected.' | ui }}
+    </div>
   </div>
 </section>

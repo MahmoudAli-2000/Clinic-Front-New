@@ -1,3 +1,5 @@
+import { ClinicDatePipe } from '../../core/pipes/clinic-date.pipe';
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { AppearanceService, Appearance, DEFAULT_APPEARANCE } from '../../core/services/appearance.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
@@ -11,7 +13,7 @@ import { EntityFormComponent } from '../../shared/entity-form/entity-form.compon
 @Component({
   selector: 'app-account-center',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, EntityFormComponent],
+  imports: [ClinicDatePipe, UiPipe, CommonModule, FormsModule, RouterLink, EntityFormComponent],
   templateUrl: './account-center.component.html',
   styleUrl: './account-center.component.css',
 })
@@ -187,6 +189,23 @@ export class AccountCenterComponent implements OnInit {
       this.busy = false;
     }
   }
+  async uploadPhoto(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const form = new FormData();
+    form.append('image', file);
+    this.busy = true;
+    this.error = '';
+    try {
+      this.user = await firstValueFrom(this.api.post<CurrentUser>('Profile/photo', form));
+      this.auth.profileChanged.next(this.user);
+      this.success = 'Photo uploaded.';
+    } catch (e) {
+      this.fail(e);
+    } finally {
+      this.busy = false;
+    }
+  }
   async saveSettings(kind: string) {
     this.busy = true;
     this.error = '';
@@ -200,7 +219,13 @@ export class AccountCenterComponent implements OnInit {
       const data =
         kind === 'preferences' ? this.preferences : kind === 'profile' ? this.profile : this.password;
       if (kind === 'password') await firstValueFrom(this.api.post(path, data));
-      else await firstValueFrom(this.api.put(path, data));
+      else {
+        const result = await firstValueFrom(this.api.put(path, data));
+        if (kind === 'profile') {
+          this.user = result;
+          this.auth.profileChanged.next(result);
+        }
+      }
       this.success = kind === 'password' ? 'Password changed.' : 'Settings saved.';
       this.password = {};
     } catch (e) {

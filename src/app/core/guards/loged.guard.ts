@@ -22,4 +22,3 @@ export const logedGuard: CanActivateFn = () => {
     catchError(() => of(true))
   );
 };
-

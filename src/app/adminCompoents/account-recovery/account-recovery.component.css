@@ -75,7 +75,7 @@
   margin-top: 28px;
 }
 .back-link i {
-  margin-right: 8px;
+  margin-inline-end: 8px;
 }
 .recovery-shell footer {
   font-size: 11px;

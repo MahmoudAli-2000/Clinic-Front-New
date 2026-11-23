@@ -7,12 +7,10 @@ import { PL } from '../../../assets/i18n/pl';
 
 import { FR } from '../../../assets/i18n/FR';
 
-
-export type Lang = 'en' | 'de' | 'pl' |'fr';
+export type Lang = 'en' | 'de' | 'pl' | 'fr';
 
 @Injectable({ providedIn: 'root' })
 export class TranslationService {
-
   private storageKey = 'lang';
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
@@ -23,8 +21,8 @@ export class TranslationService {
     en: EN,
     de: DE,
     pl: PL,
-   
-    fr:FR
+
+    fr: FR,
   };
 
   // ✅ قراءة اللغة بأمان
@@ -36,10 +34,7 @@ export class TranslationService {
   }
 
   t(key: string): string {
-    return key.split('.').reduce(
-      (obj: any, k) => obj?.[k],
-      this.translations[this.lang()]
-    ) ?? key;
+    return key.split('.').reduce((obj: any, k) => obj?.[k], this.translations[this.lang()]) ?? key;
   }
 
   // ✅ حفظ اللغة بأمان

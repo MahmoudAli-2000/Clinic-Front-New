@@ -1,21 +1,25 @@
 <form #form="ngForm" (ngSubmit)="submit(form)" class="record-form">
   <div class="field-grid">
     <label *ngFor="let field of fields" [class.full]="field.type === 'textarea'" class="field">
-      <span>{{ field.label }} <b *ngIf="field.required" aria-hidden="true">*</b></span>
+      <span>{{ field.label | ui }} <b *ngIf="field.required" aria-hidden="true">*</b></span>
       <ng-container [ngSwitch]="field.type">
         <select
           *ngSwitchCase="'select'"
           [(ngModel)]="model[field.key]"
           [name]="field.key"
+          [attr.aria-label]="field.label | ui"
           [required]="!!field.required"
         >
-          <option [ngValue]="undefined">Choose {{ field.label.toLowerCase() }}</option>
-          <option *ngFor="let option of field.options" [ngValue]="option.value">{{ option.label }}</option>
+          <option [ngValue]="undefined">{{ 'Choose' | ui }} {{ field.label | ui }}</option>
+          <option *ngFor="let option of field.options" [ngValue]="option.value">
+            {{ option.label | ui }}
+          </option>
         </select>
         <textarea
           *ngSwitchCase="'textarea'"
           [(ngModel)]="model[field.key]"
           [name]="field.key"
+          [attr.aria-label]="field.label | ui"
           [required]="!!field.required"
           rows="3"
         ></textarea>
@@ -24,6 +28,7 @@
           type="checkbox"
           [(ngModel)]="model[field.key]"
           [name]="field.key"
+          [attr.aria-label]="field.label | ui"
           class="check-input"
         />
         <input
@@ -37,6 +42,7 @@
           [type]="field.type === 'roles' ? 'text' : field.type || 'text'"
           [(ngModel)]="model[field.key]"
           [name]="field.key"
+          [attr.aria-label]="field.label | ui"
           [required]="!!field.required"
           [min]="field.min ?? null"
           [max]="field.max ?? null"
@@ -44,15 +50,16 @@
           [autocomplete]="field.type === 'password' ? 'new-password' : 'off'"
         />
       </ng-container>
-      <small *ngIf="field.hint">{{ field.hint }}</small>
+      <small *ngIf="field.hint">{{ field.hint | ui }}</small>
     </label>
   </div>
   <p class="validation-note" *ngIf="form.submitted && form.invalid" role="alert">
-    Please complete the required fields with valid values.
+    {{ 'Please complete the required fields with valid values.' | ui }}
   </p>
   <div class="form-actions">
     <button type="button" class="cp-button secondary" (click)="dismiss.emit()" [disabled]="busy">
-      Cancel</button
-    ><button type="submit" class="cp-button" [disabled]="busy">{{ busy ? 'Saving...' : submitLabel }}</button>
+      {{ 'Cancel' | ui }}</button><button type="submit" class="cp-button" [disabled]="busy">
+      {{ (busy ? 'Saving...' : submitLabel) | ui }}
+    </button>
   </div>
 </form>

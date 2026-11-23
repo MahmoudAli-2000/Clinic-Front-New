@@ -1,3 +1,6 @@
+import { ClinicDatePipe } from '../../core/pipes/clinic-date.pipe';
+import { LanguageService } from '../../core/services/language.service';
+import { UiPipe } from '../../core/pipes/ui.pipe';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -11,11 +14,12 @@ import { EntityFormComponent } from '../../shared/entity-form/entity-form.compon
 @Component({
   selector: 'app-clinic-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, EntityFormComponent],
+  imports: [ClinicDatePipe, UiPipe, CommonModule, FormsModule, RouterLink, EntityFormComponent],
   templateUrl: './clinic-page.component.html',
   styleUrl: './clinic-page.component.css',
 })
 export class ClinicPageComponent implements OnInit, OnDestroy {
+  language = inject(LanguageService);
   api = inject(WorkspaceApiService);
   auth = inject(AuthService);
   route = inject(ActivatedRoute);
@@ -146,7 +150,7 @@ export class ClinicPageComponent implements OnInit, OnDestroy {
   }
   display(row: RecordData, key: string): string {
     if (key === 'name') return `${row['firstName'] || ''} ${row['lastName'] || ''}`.trim();
-    const value = row[key];
+    const value = this.language.currentLang() === 'ar' && row[key + 'Ar'] ? row[key + 'Ar'] : row[key];
     if (Array.isArray(value)) return value.join(', ');
     if (key === 'dayOfWeek')
       return (
@@ -221,6 +225,7 @@ export class ClinicPageComponent implements OnInit, OnDestroy {
           options = result.data.map((r: RecordData) => ({
             value: r['id'],
             label:
+              r['displayName'] ||
               r['fullName'] ||
               r['clinicName'] ||
               r['specialtyName'] ||
