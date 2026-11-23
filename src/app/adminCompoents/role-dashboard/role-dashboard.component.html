@@ -1,0 +1,71 @@
+<section class="dashboard-page">
+  <div class="welcome-banner">
+    <div class="welcome-copy">
+      <span class="eyebrow"><i class="fas fa-sparkles"></i> {{ content.focus }}</span>
+      <h1>{{ content.heading }}, {{ firstName }}</h1>
+      <p>{{ content.description }}</p>
+    </div>
+    <div class="welcome-art" aria-hidden="true">
+      <span class="art-circle circle-one"></span>
+      <span class="art-circle circle-two"></span>
+      <i class="fas fa-heartbeat"></i>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-card">
+    <span class="loader"></span>
+    <span>Preparing your workspace...</span>
+  </div>
+
+  <div *ngIf="loadError" class="error-card">
+    We couldn't load your account details. Refresh the page or sign in again.
+  </div>
+
+  <div class="summary-grid" *ngIf="!isLoading && !loadError">
+    <article class="summary-card">
+      <span class="summary-icon blue"><i class="fas fa-calendar-check"></i></span>
+      <div>
+        <small>{{ role === 'Patient' ? 'My appointments' : 'Appointments' }}</small>
+        <strong>{{ appointmentCount }}</strong>
+      </div>
+    </article>
+    <article class="summary-card" *ngIf="role === 'Patient'">
+      <span class="summary-icon teal"><i class="fas fa-notes-medical"></i></span>
+      <div><small>Visit history</small><strong>{{ personalVisitCount }}</strong></div>
+    </article>
+    <article class="summary-card" *ngIf="role === 'Patient' || role === 'Doctor'">
+      <span class="summary-icon violet"><i class="fas fa-prescription"></i></span>
+      <div><small>Prescriptions</small><strong>{{ personalPrescriptionCount }}</strong></div>
+    </article>
+    <article class="summary-card">
+      <span class="summary-icon amber"><i class="fas fa-bell"></i></span>
+      <div><small>Unread notifications</small><strong>{{ unreadNotifications }}</strong></div>
+    </article>
+  </div>
+
+  <div class="section-heading">
+    <div>
+      <span class="eyebrow">YOUR WORKSPACE</span>
+      <h2>Quick access</h2>
+    </div>
+    <span class="role-chip"><i class="fas fa-user-check"></i> {{ role }}</span>
+  </div>
+
+  <div class="action-grid">
+    <a *ngFor="let action of content.actions" class="action-card" [routerLink]="action.path">
+      <span [ngClass]="'action-icon accent-' + action.accent">
+        <i [ngClass]="'fas ' + action.icon"></i>
+      </span>
+      <span class="action-copy">
+        <strong>{{ action.title }}</strong>
+        <small>{{ action.description }}</small>
+      </span>
+      <i class="fas fa-arrow-up-right-from-square card-arrow"></i>
+    </a>
+  </div>
+
+  <div class="privacy-note">
+    <span><i class="fas fa-lock"></i></span>
+    <p><strong>Your workspace is role-aware.</strong> Information and tools are shown according to your clinic access.</p>
+  </div>
+</section>

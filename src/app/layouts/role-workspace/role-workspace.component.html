@@ -1,0 +1,70 @@
+<div class="workspace">
+  <button
+    class="sidebar-scrim"
+    [class.visible]="isMenuOpen"
+    aria-label="Close navigation"
+    (click)="closeMenu()">
+  </button>
+
+  <aside class="workspace-sidebar" [class.open]="isMenuOpen">
+    <a class="brand" routerLink="/admin/dashboard" (click)="closeMenu()">
+      <span class="brand-mark"><i class="fas fa-heartbeat"></i></span>
+      <span>
+        <strong>CarePoint</strong>
+        <small>Clinic workspace</small>
+      </span>
+    </a>
+
+    <div class="sidebar-caption">WORKSPACE</div>
+    <nav class="workspace-nav" aria-label="Main navigation">
+      <a
+        *ngFor="let item of visibleNavigation"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeMenu()">
+        <i [ngClass]="'fas ' + item.icon"></i>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-help">
+      <span class="help-icon"><i class="fas fa-shield-heart"></i></span>
+      <strong>Care comes first</strong>
+      <p>Your workspace is tailored to your clinic role.</p>
+    </div>
+  </aside>
+
+  <div class="workspace-main">
+    <header class="workspace-header">
+      <button class="menu-toggle" aria-label="Toggle navigation" (click)="isMenuOpen = !isMenuOpen">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div class="header-title">
+        <span>CarePoint Clinic</span>
+        <strong>{{ roleLabel }} workspace</strong>
+      </div>
+      <div class="header-actions">
+        <div class="user-summary">
+          <span class="user-avatar">{{ initials }}</span>
+          <span class="user-copy">
+            <strong>{{ currentUser?.fullName || 'Clinic user' }}</strong>
+            <small>{{ roleLabel }}</small>
+          </span>
+        </div>
+        <button class="logout-button" (click)="onLogout()" aria-label="Sign out">
+          <i class="fas fa-arrow-right-from-bracket"></i>
+          <span>Sign out</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace-content">
+      <router-outlet></router-outlet>
+    </main>
+    <footer class="workspace-footer">
+      <span>CarePoint Clinic</span>
+      <span>Secure care workspace</span>
+    </footer>
+  </div>
+</div>

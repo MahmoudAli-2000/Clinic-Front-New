@@ -1,0 +1,195 @@
+<section class="clinic-page-shell">
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">CAREPOINT WORKSPACE</span>
+      <h1>{{ pageTitle }}</h1>
+    </div>
+    <button class="primary-btn" routerLink="/admin/dashboard">
+      <i class="fas fa-arrow-left"></i>
+      Back to overview
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading clinic data...</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-box">
+    {{ errorMessage }}
+  </div>
+
+  <div class="content-panel" *ngIf="!isLoading">
+    <div class="panel-topbar">
+      <h2>{{ pageTitle }}</h2>
+      <span class="badge">{{ totalCount }} records</span>
+    </div>
+
+    <ng-container [ngSwitch]="section">
+      <table *ngSwitchCase="'patients'" class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let patient of patients">
+            <td>
+              <div class="entity-name">
+                <span class="avatar">{{ patient.firstName.charAt(0) || 'P' }}</span>
+                <span>{{ patient.firstName }} {{ patient.lastName }}</span>
+              </div>
+            </td>
+            <td>{{ patient.phone || '—' }}</td>
+            <td>{{ patient.email || '—' }}</td>
+            <td><span class="status-pill status-{{ patient.status.toLowerCase() || 'active' }}">{{ patient.status || 'Active' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'doctors'" class="data-table">
+        <thead>
+          <tr>
+            <th>Doctor</th>
+            <th>Specialty</th>
+            <th>License</th>
+            <th>Availability</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doctor of doctors">
+            <td>
+              <div class="entity-name">
+                <span class="avatar avatar-green">{{ doctor.fullName.charAt(0) || 'D' }}</span>
+                <span>{{ doctor.fullName }}</span>
+              </div>
+            </td>
+            <td>{{ doctor.specialtyName || 'General' }}</td>
+            <td>{{ doctor.licenseNo || '—' }}</td>
+            <td>{{ doctor.isActive ? 'Available' : 'Off duty' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'appointments'" class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appointment of appointments">
+            <td>{{ appointment.patientName }}</td>
+            <td>{{ appointment.doctorName }}</td>
+            <td>{{ appointment.scheduledStartAtUtc | date: 'mediumDate' }}</td>
+            <td><span class="status-pill status-{{ appointment.status.toLowerCase() || 'scheduled' }}">{{ appointment.status || 'Scheduled' }}</span></td>
+            <td class="table-actions">
+              <button class="table-action" *ngIf="appointment.status === 'Scheduled'" (click)="confirmAppointment(appointment.id)">Confirm</button>
+              <button class="table-action" *ngIf="appointment.status === 'Confirmed'" (click)="checkInAppointment(appointment.id)">Check in</button>
+              <button class="table-action" *ngIf="appointment.status === 'CheckedIn'" (click)="completeAppointment(appointment.id)">Complete</button>
+              <button class="table-action danger" *ngIf="appointment.status !== 'Cancelled' && appointment.status !== 'Completed'" (click)="cancelAppointment(appointment.id)">Cancel</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'clinics'" class="data-table">
+        <thead>
+          <tr>
+            <th>Clinic</th>
+            <th>Phone</th>
+            <th>City</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let clinic of clinics">
+            <td>
+              <div class="entity-name">
+                <span class="avatar avatar-rose">{{ clinic.clinicName.charAt(0) || 'C' }}</span>
+                <span>{{ clinic.clinicName }}</span>
+              </div>
+            </td>
+            <td>{{ clinic.phone || '—' }}</td>
+            <td>{{ clinic.city || '—' }}</td>
+            <td><span class="status-pill status-{{ clinic.isActive ? 'active' : 'inactive' }}">{{ clinic.isActive ? 'Active' : 'Inactive' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'schedules'" class="data-table">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Shift</th>
+            <th>Slot</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let schedule of schedules">
+            <td>{{ ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][schedule.dayOfWeek - 1] || '—' }}</td>
+            <td>{{ schedule.startTime }} - {{ schedule.endTime }}</td>
+            <td>{{ schedule.slotDurationMinutes }} min</td>
+            <td><span class="status-pill status-{{ schedule.isActive ? 'active' : 'inactive' }}">{{ schedule.isActive ? 'Active' : 'Inactive' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'services'" class="data-table">
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Description</th>
+            <th>Image</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let service of services">
+            <td>{{ service.specialtyName }}</td>
+            <td>{{ service.description || 'General specialty care' }}</td>
+            <td>{{ service.imageCover ? 'Available' : 'Default' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngSwitchCase="'staff'" class="data-table">
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Job title</th>
+            <th>Contact</th>
+            <th>Roles</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let employee of staff">
+            <td>
+              <div class="entity-name">
+                <span class="avatar avatar-green">{{ employee.firstName.charAt(0) || 'S' }}</span>
+                <span>{{ employee.firstName }} {{ employee.lastName }}</span>
+              </div>
+            </td>
+            <td>{{ employee.jobTitle || 'Clinic staff' }}</td>
+            <td>{{ employee.email || employee.phone || '—' }}</td>
+            <td>{{ employee.roles.join(', ') || 'Staff' }}</td>
+            <td><span class="status-pill status-{{ employee.status?.toLowerCase() || 'active' }}">{{ employee.status || 'Active' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+    <div *ngIf="totalCount === 0" class="empty-state">
+      <i class="fas fa-folder-open"></i>
+      <h3>No records found</h3>
+      <p>There are no {{ pageTitle.toLowerCase() }} to show yet.</p>
+    </div>
+  </div>
+</section>

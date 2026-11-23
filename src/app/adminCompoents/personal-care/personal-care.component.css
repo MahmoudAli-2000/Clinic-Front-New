@@ -1,0 +1,269 @@
+.care-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px clamp(18px, 3.2vw, 46px) 48px;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.eyebrow {
+  color: #138b83;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.page-heading h1 {
+  margin: 7px 0 5px;
+  color: #1b2b48;
+  font-size: clamp(24px, 3vw, 31px);
+  letter-spacing: -.04em;
+}
+
+.page-heading p {
+  margin: 0;
+  color: #7d899d;
+  font-size: 12px;
+}
+
+.secure-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid #d5efea;
+  border-radius: 999px;
+  background: #f0faf7;
+  color: #16877e;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.state-card,
+.profile-card,
+.record-card,
+.empty-card {
+  border: 1px solid #e8edf4;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 17px rgba(27, 44, 71, .035);
+}
+
+.state-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  color: #68778c;
+  font-size: 12px;
+}
+
+.error-state {
+  border-color: #ffd7d7;
+  background: #fff7f7;
+  color: #a34343;
+}
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #d6e5e9;
+  border-top-color: #098d85;
+  border-radius: 50%;
+  animation: spin .75s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.profile-card {
+  display: flex;
+  gap: 22px;
+  padding: 25px;
+}
+
+.profile-avatar {
+  display: grid;
+  width: 68px;
+  height: 68px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #dff5f1, #e8efff);
+  color: #13877e;
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.profile-content {
+  flex: 1;
+}
+
+.profile-content h2 {
+  margin: 5px 0 20px;
+  color: #1b2b48;
+  font-size: 21px;
+}
+
+.profile-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.profile-fields small,
+.profile-fields strong {
+  display: block;
+}
+
+.profile-fields small {
+  margin-bottom: 5px;
+  color: #8a96a9;
+  font-size: 10px;
+}
+
+.profile-fields strong {
+  color: #34445e;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.record-list {
+  display: grid;
+  gap: 12px;
+}
+
+.record-card {
+  display: flex;
+  gap: 15px;
+  padding: 18px;
+}
+
+.record-symbol {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  background: #e6f7f4;
+  color: #09887f;
+}
+
+.prescription-symbol {
+  background: #edf1ff;
+  color: #5674ce;
+}
+
+.record-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.record-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.record-top strong {
+  color: #2a3a55;
+  font-size: 13px;
+}
+
+.status-tag {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #eef5f8;
+  color: #5a7083;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.record-main p {
+  margin: 8px 0 6px;
+  color: #53637a;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.record-main > small {
+  display: block;
+  color: #8793a7;
+  font-size: 10px;
+}
+
+.record-notes {
+  margin-top: 8px;
+  color: #63738a !important;
+}
+
+.medication-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.medication-list > span {
+  padding: 6px 9px;
+  border: 1px solid #e8edf4;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #4c5c74;
+  font-size: 10px;
+}
+
+.medication-list small {
+  color: #8793a7;
+}
+
+.empty-card {
+  display: grid;
+  min-height: 170px;
+  place-content: center;
+  justify-items: center;
+  gap: 7px;
+  color: #8a96a9;
+  text-align: center;
+}
+
+.empty-card i {
+  margin-bottom: 4px;
+  color: #8bbdb8;
+  font-size: 24px;
+}
+
+.empty-card strong {
+  color: #40516b;
+  font-size: 12px;
+}
+
+.empty-card span {
+  font-size: 10px;
+}
+
+@media (max-width: 620px) {
+  .page-heading {
+    align-items: flex-start;
+  }
+
+  .profile-card {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .profile-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .record-card {
+    padding: 14px;
+  }
+}

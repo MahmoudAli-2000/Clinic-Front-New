@@ -1,0 +1,75 @@
+<section class="care-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">PERSONAL HEALTH</span>
+      <h1>{{ pageTitle }}</h1>
+      <p>Access your own clinic information and care records.</p>
+    </div>
+    <span class="secure-mark"><i class="fas fa-lock"></i> Private</span>
+  </header>
+
+  <div *ngIf="isLoading" class="state-card">
+    <span class="loader"></span>
+    <span>Loading your records...</span>
+  </div>
+  <div *ngIf="errorMessage" class="state-card error-state">{{ errorMessage }}</div>
+
+  <article *ngIf="!isLoading && section === 'profile' && currentUser" class="profile-card">
+    <div class="profile-avatar">{{ currentUser.fullName.charAt(0) || 'P' }}</div>
+    <div class="profile-content">
+      <span class="eyebrow">PATIENT ACCOUNT</span>
+      <h2>{{ currentUser.fullName }}</h2>
+      <div class="profile-fields">
+        <div><small>Email address</small><strong>{{ currentUser.email }}</strong></div>
+        <div><small>Account status</small><strong>{{ currentUser.isActive ? 'Active' : 'Inactive' }}</strong></div>
+        <div><small>Patient record</small><strong>{{ currentUser.patientId || 'Not linked' }}</strong></div>
+        <div><small>Email verification</small><strong>{{ currentUser.emailConfirmed ? 'Verified' : 'Not verified' }}</strong></div>
+      </div>
+    </div>
+  </article>
+
+  <div *ngIf="!isLoading && section === 'visits'" class="record-list">
+    <article *ngFor="let visit of visits" class="record-card">
+      <div class="record-symbol"><i class="fas fa-notes-medical"></i></div>
+      <div class="record-main">
+        <div class="record-top">
+          <strong>Visit #{{ visit.id }}</strong>
+          <span class="status-tag">{{ visit.status }}</span>
+        </div>
+        <p>{{ visit.chiefComplaint || 'Clinic visit' }}</p>
+        <small *ngIf="visit.visitStartAtUtc">Visit date: {{ visit.visitStartAtUtc | date:'medium' }}</small>
+        <small *ngIf="visit.doctorNotes" class="record-notes">{{ visit.doctorNotes }}</small>
+      </div>
+    </article>
+    <div *ngIf="!visits.length && !errorMessage" class="empty-card">
+      <i class="fas fa-file-medical"></i>
+      <strong>No visit history yet</strong>
+      <span>Completed visits will appear here.</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && section === 'prescriptions'" class="record-list">
+    <article *ngFor="let prescription of prescriptions" class="record-card">
+      <div class="record-symbol prescription-symbol"><i class="fas fa-prescription"></i></div>
+      <div class="record-main">
+        <div class="record-top">
+          <strong>Prescription #{{ prescription.id }}</strong>
+          <span class="status-tag">{{ prescription.status }}</span>
+        </div>
+        <small>Issued {{ prescription.issuedAtUtc | date:'mediumDate' }}</small>
+        <p *ngIf="prescription.notes">{{ prescription.notes }}</p>
+        <div *ngIf="prescription.items?.length" class="medication-list">
+          <span *ngFor="let medication of prescription.items">
+            {{ medication.medicationName || 'Medication' }}
+            <small *ngIf="medication.dosage"> · {{ medication.dosage }}</small>
+          </span>
+        </div>
+      </div>
+    </article>
+    <div *ngIf="!prescriptions.length && !errorMessage" class="empty-card">
+      <i class="fas fa-prescription"></i>
+      <strong>No prescriptions found</strong>
+      <span>Prescriptions associated with your account will appear here.</span>
+    </div>
+  </div>
+</section>

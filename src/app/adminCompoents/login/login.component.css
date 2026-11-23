@@ -1,0 +1,347 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  display: grid;
+  min-height: 100vh;
+  padding: clamp(24px, 6vw, 74px);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(39, 183, 166, .24), transparent 31%),
+    radial-gradient(circle at 80% 82%, rgba(53, 102, 166, .38), transparent 34%),
+    linear-gradient(132deg, #10213f 0%, #163b5d 55%, #0e7776 100%);
+}
+
+.login-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 435px);
+  align-items: center;
+  gap: clamp(36px, 8vw, 110px);
+  width: min(1120px, 100%);
+  margin: auto;
+}
+
+.login-intro {
+  max-width: 580px;
+  color: #fff;
+}
+
+.intro-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 22px;
+  color: #8be2d8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .17em;
+}
+
+.intro-label i {
+  font-size: 16px;
+}
+
+.login-intro h1 {
+  max-width: 570px;
+  margin: 0 0 18px;
+  font-size: clamp(40px, 6vw, 68px);
+  font-weight: 750;
+  letter-spacing: -.055em;
+  line-height: 1.06;
+}
+
+.login-intro > p {
+  max-width: 455px;
+  margin: 0;
+  color: rgba(235, 244, 251, .78);
+  font-size: clamp(14px, 1.5vw, 17px);
+  line-height: 1.8;
+}
+
+.intro-location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+  color: #c6d9e8;
+  font-size: 11px;
+  letter-spacing: .03em;
+}
+
+.intro-location i {
+  color: #86dfd5;
+}
+
+.login-card {
+  width: 100%;
+  padding: clamp(26px, 4vw, 42px);
+  border: 1px solid rgba(255, 255, 255, .72);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, .98);
+  box-shadow: 0 28px 80px rgba(4, 17, 35, .29);
+}
+
+.card-heading {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.brand-mark {
+  display: grid;
+  width: 55px;
+  height: 55px;
+  margin: 0 auto 13px;
+  place-items: center;
+  border-radius: 17px;
+  background: linear-gradient(135deg, #13a59e, #0b817c);
+  color: #fff;
+  font-size: 23px;
+  box-shadow: 0 9px 22px rgba(9, 139, 131, .23);
+}
+
+.portal-label {
+  margin: 0 0 9px;
+  color: #14877f;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.portal-label span {
+  padding: 0 3px;
+  color: #9db3b5;
+}
+
+.card-heading h2 {
+  margin: 0;
+  color: #20314c;
+  font-size: clamp(21px, 3vw, 25px);
+  font-weight: 750;
+  letter-spacing: -.035em;
+}
+
+.card-subtitle {
+  margin: 8px 0 0;
+  color: #8290a2;
+  font-size: 12px;
+}
+
+.form-field {
+  margin-bottom: 17px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 7px;
+  color: #40516a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 14px;
+  color: #93a0b0;
+  font-size: 13px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.form-control {
+  min-height: 48px;
+  padding: 11px 14px 11px 40px;
+  border: 1px solid #e0e6ee;
+  border-radius: 10px;
+  background: #fbfcfe;
+  color: #293a55;
+  font-size: 12px;
+  box-shadow: none;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.form-control::placeholder {
+  color: #a4afbd;
+}
+
+.form-control:focus {
+  border-color: #15988f;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(21, 152, 143, .12);
+}
+
+.form-control.is-invalid {
+  border-color: #d35d5d;
+  background-image: none;
+}
+
+.password-input {
+  padding-right: 47px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  display: grid;
+  width: 35px;
+  height: 35px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #7d899a;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+  background: #f0f5f5;
+  color: #138b83;
+}
+
+.field-error {
+  margin-top: 5px;
+  color: #bd4d4d;
+  font-size: 10px;
+}
+
+.submit-button {
+  display: flex;
+  width: 100%;
+  min-height: 49px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(110deg, #0b817c, #16a69b);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(11, 129, 124, .21);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.submit-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 11px 22px rgba(11, 129, 124, .28);
+}
+
+.submit-button:focus-visible,
+.password-toggle:focus-visible,
+.register-link a:focus-visible {
+  outline: 3px solid rgba(21, 152, 143, .36);
+  outline-offset: 3px;
+}
+
+.error-message,
+.success-message {
+  margin-top: 13px;
+  padding: 10px;
+  border: 1px solid #f1caca;
+  border-radius: 8px;
+  background: #fff3f3;
+  color: #a64141;
+  font-size: 11px;
+  text-align: center;
+}
+
+.success-message {
+  border-color: #b9ddc9;
+  background: #edf8f1;
+  color: #236340;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 21px;
+  padding-top: 15px;
+  border-top: 1px solid #edf0f4;
+  color: #8491a2;
+  font-size: 10px;
+}
+
+.card-footer i {
+  color: #168a82;
+}
+
+.register-link {
+  margin: 15px 0 0;
+  color: #78869a;
+  font-size: 10px;
+  text-align: center;
+}
+
+.register-link a {
+  color: #0e8982;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .login-page {
+    min-height: 100vh;
+    padding: 30px 18px;
+  }
+
+  .login-content {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    max-width: 470px;
+  }
+
+  .login-intro {
+    text-align: center;
+  }
+
+  .intro-label {
+    margin-bottom: 10px;
+  }
+
+  .login-intro h1 {
+    max-width: 430px;
+    margin: 0 auto 9px;
+    font-size: clamp(31px, 9vw, 43px);
+  }
+
+  .login-intro > p {
+    margin: 0 auto;
+    font-size: 13px;
+  }
+
+  .intro-location {
+    justify-content: center;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .login-card {
+    padding: 24px 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
