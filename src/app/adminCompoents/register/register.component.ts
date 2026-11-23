@@ -2,7 +2,7 @@ import { UiPipe } from '../../core/pipes/ui.pipe';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../core/services/toast.service';
 import { AuthService } from '../../core/services/auth.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgClass, CommonModule } from '@angular/common';
@@ -22,7 +22,7 @@ export class RegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly Router = inject(Router);
   private readonly _formBuilder = inject(FormBuilder);
-  private readonly toasterService = inject(ToastrService);
+  private readonly toasterService = inject(ToastService);
 
   registrationForm: FormGroup = this._formBuilder.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],

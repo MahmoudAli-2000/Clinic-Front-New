@@ -1,3 +1,4 @@
+import { NotificationCenterService } from '../../core/services/notification-center.service';
 import { Subscription } from 'rxjs';
 import { LanguageService } from '../../core/services/language.service';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,7 @@ import { AppearanceService } from '../../core/services/appearance.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, inject, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../core/services/toast.service';
 import { CurrentUser, AuthService } from '../../core/services/auth.service';
 import { getPrimaryRole, ROLE_NAVIGATION, RoleNavigationItem } from '../../core/auth/role-access';
 
@@ -18,6 +19,7 @@ import { getPrimaryRole, ROLE_NAVIGATION, RoleNavigationItem } from '../../core/
   styleUrl: './role-workspace.component.css',
 })
 export class RoleWorkspaceComponent implements OnInit, OnDestroy {
+  notificationCenter = inject(NotificationCenterService);
   language = inject(LanguageService);
   private appearance = inject(AppearanceService);
   currentUser: CurrentUser | null = null;
@@ -27,7 +29,7 @@ export class RoleWorkspaceComponent implements OnInit, OnDestroy {
 
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastrService);
+  private readonly toast = inject(ToastService);
   private readonly platformId = inject(PLATFORM_ID);
 
   private profileSubscription?: Subscription;
@@ -42,6 +44,7 @@ export class RoleWorkspaceComponent implements OnInit, OnDestroy {
       next: (user) => {
         this.currentUser = user;
         this.appearance.load(user.id);
+        this.notificationCenter.refresh();
         this.language.load(user.id);
         this.profileSubscription = this.auth.profileChanged.subscribe((updated) => {
           this.currentUser = updated;
@@ -93,6 +96,7 @@ export class RoleWorkspaceComponent implements OnInit, OnDestroy {
     this.auth.logout().subscribe({
       next: () => {
         this.appearance.reset();
+        this.notificationCenter.reset();
         this.language.reset();
         this.toast.success(this.language.t('You have been signed out.'), this.language.t('Signed out'));
         this.router.navigate(['/admin/login']);

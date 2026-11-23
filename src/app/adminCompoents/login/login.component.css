@@ -359,3 +359,5 @@
   color: #278575;
   text-decoration: none;
 }
+/* Persistent inline status complements the new floating card without the legacy green panel. */
+.success-message {background:transparent;border:0;color:#6d8f86;padding:8px 0;font-size:11px;box-shadow:none;}

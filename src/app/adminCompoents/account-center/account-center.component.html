@@ -159,40 +159,128 @@
         </form>
       </section>
     </div>
-    <div *ngSwitchCase="'notifications'" class="cp-card notifications">
-      <div class="panel-toolbar">
-        <label
-          ><input type="checkbox" [(ngModel)]="unreadOnly" (change)="page = 1; load()" />
-          {{ 'Unread only' | ui }}</label
-        ><span>{{ total | ui }} {{ 'notifications' | ui }}</span>
-      </div>
-      <article *ngFor="let row of rows" class="notification-row" [class.unread]="!row['readAtUtc']">
-        <span class="notification-icon"><i class="fas fa-bell"></i></span>
+    <section *ngSwitchCase="'notifications'" class="notification-center">
+      <div class="notification-hero">
         <div>
-          <h2>{{ row['title'] | ui }}</h2>
-          <p>{{ row['message'] | ui }}</p>
-          <small>{{ row['createdAtUtc'] | clinicDate: 'medium' | ui }} · {{ row['channel'] | ui }}</small>
+          <span class="cp-eyebrow">{{ 'YOUR INBOX' | ui }}</span>
+          <h2>{{ 'Updates that matter' | ui }}</h2>
+          <p>{{ 'Choose what you see. Keep your care in focus.' | ui }}</p>
         </div>
-        <button class="text-button" *ngIf="!row['readAtUtc']" (click)="markRead(row)">
-          {{ 'Mark read' | ui }}
-        </button>
-      </article>
-      <div *ngIf="!rows.length" class="cp-empty">
-        <h2>{{ "You're all caught up" | ui }}</h2>
-        <p>{{ 'New clinic updates will appear here.' | ui }}</p>
-      </div>
-      <div class="panel-toolbar">
-        <button class="cp-button secondary" [disabled]="page <= 1" (click)="page = page - 1; load()">
-          {{ 'Previous' | ui }}</button><span>{{ 'Page' | ui }} {{ page | ui }}</span
-        ><button
-          class="cp-button secondary"
-          [disabled]="page * 10 >= total"
-          (click)="page = page + 1; load()"
+        <span class="notification-orbit"
+          ><i class="fas fa-bell"></i><b>{{ notificationCenter.unread() }}</b></span
         >
-          {{ 'Next' | ui }}
-        </button>
       </div>
-    </div>
+      <div class="notification-layout">
+        <aside class="cp-card notification-filters">
+          <span class="cp-eyebrow">{{ 'CATEGORIES' | ui }}</span>
+          <button
+            *ngFor="let category of notificationCategories"
+            type="button"
+            [class.selected]="notificationCategory === category"
+            (click)="filterNotifications(category)"
+          >
+            <i
+              [class]="
+                category === 'appointments'
+                  ? 'fas fa-calendar-check'
+                  : category === 'reminders'
+                    ? 'fas fa-clock'
+                    : category === 'general'
+                      ? 'fas fa-circle-info'
+                      : 'fas fa-layer-group'
+              "
+            ></i
+            >{{
+              (category === 'all'
+                ? 'All updates'
+                : category === 'appointments'
+                  ? 'Appointments'
+                  : category === 'reminders'
+                    ? 'Reminders'
+                    : 'General'
+              ) | ui
+            }}
+          </button>
+          <div class="notification-view-controls">
+            <label
+              ><input type="checkbox" [(ngModel)]="unreadOnly" (change)="page = 1; load()" />{{
+                'Unread only' | ui
+              }}</label
+            ><label
+              ><input type="checkbox" [(ngModel)]="showHidden" (change)="page = 1; load()" />{{
+                'Hidden notifications' | ui
+              }}</label
+            >
+          </div>
+          <a [routerLink]="['../settings']" class="notification-settings"
+            ><i class="fas fa-sliders"></i>{{ 'Delivery preferences' | ui }}</a
+          >
+        </aside>
+        <div class="cp-card notifications">
+          <div class="panel-toolbar">
+            <strong>{{ total }} {{ 'notifications' | ui }}</strong
+            ><span>{{ showHidden ? ('Hidden notifications' | ui) : ('Your visible inbox' | ui) }}</span>
+          </div>
+          <article
+            *ngFor="let row of rows"
+            class="notification-row"
+            [class.unread]="!row['readAtUtc']"
+            [class.hidden-notification]="showHidden"
+          >
+            <span class="notification-icon"><i [class]="'fas ' + notificationIcon(row)"></i></span>
+            <div>
+              <div class="notification-meta">
+                <span class="category-chip">{{ notificationCategoryLabel(row) | ui }}</span
+                ><span class="new-dot" *ngIf="!row['readAtUtc']">{{ 'New' | ui }}</span>
+              </div>
+              <h2>{{ row['title'] }}</h2>
+              <p>{{ row['message'] }}</p>
+              <small>{{ row['createdAtUtc'] | clinicDate: 'medium' }} · {{ row['channel'] }}</small>
+              <div class="notification-actions">
+                <button
+                  class="text-button"
+                  *ngIf="!row['readAtUtc']"
+                  (click)="markRead(row)"
+                  [disabled]="busy"
+                >
+                  <i class="fas fa-check"></i>{{ 'Mark read' | ui }}</button
+                ><button
+                  class="text-button"
+                  (click)="notificationAction(row, showHidden ? 'restore' : 'hide')"
+                  [disabled]="busy"
+                >
+                  <i [class]="showHidden ? 'fas fa-eye' : 'fas fa-eye-slash'"></i
+                  >{{ (showHidden ? 'Restore' : 'Hide') | ui }}</button
+                ><button
+                  class="text-button danger"
+                  (click)="notificationAction(row, 'delete')"
+                  [disabled]="busy"
+                >
+                  <i class="fas fa-trash-can"></i>{{ 'Delete' | ui }}
+                </button>
+              </div>
+            </div>
+          </article>
+          <div *ngIf="!rows.length" class="cp-empty">
+            <span class="inbox-empty"><i class="fas fa-check-double"></i></span>
+            <h2>{{ "You're all caught up" | ui }}</h2>
+            <p>{{ 'New clinic updates will appear here.' | ui }}</p>
+          </div>
+          <div class="panel-toolbar">
+            <button class="cp-button secondary" [disabled]="page <= 1" (click)="page = page - 1; load()">
+              {{ 'Previous' | ui }}</button
+            ><span>{{ 'Page' | ui }} {{ page }}</span
+            ><button
+              class="cp-button secondary"
+              [disabled]="page * 10 >= total"
+              (click)="page = page + 1; load()"
+            >
+              {{ 'Next' | ui }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
     <div *ngSwitchCase="'time-off'" class="cp-card">
       <div class="panel-toolbar">
         <select [(ngModel)]="doctorId" (change)="load()" [attr.aria-label]="'Doctor' | ui">

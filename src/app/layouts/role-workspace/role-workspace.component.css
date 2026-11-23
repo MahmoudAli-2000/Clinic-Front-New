@@ -586,3 +586,60 @@
     max-width: 66px;
   }
 }
+
+.header-notifications {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  min-height: 38px;
+  border: 1px solid var(--cp-border, #e4ede9);
+  border-radius: 12px;
+  background: var(--cp-surface, #fff);
+}
+.header-notifications.has-unread {
+  color: var(--cp-green, #278575);
+  background: color-mix(in srgb, var(--cp-green, #278575) 9%, var(--cp-surface, #fff));
+}
+.unread-badge {
+  position: absolute;
+  inset-block-start: -5px;
+  inset-inline-end: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #e57855;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  border: 2px solid var(--cp-surface, #fff);
+  padding-inline: 3px;
+}
+@media (max-width: 350px) {
+  .header-notifications {
+    display: inline-flex;
+    min-width: 30px;
+    min-height: 32px;
+    padding: 4px;
+  }
+  .user-copy strong {
+    max-width: 55px;
+  }
+  .header-actions {
+    gap: 1px;
+  }
+  .header-language {
+    max-width: 61px;
+  }
+  .user-avatar {
+    width: 30px;
+    height: 30px;
+  }
+  .logout-button {
+    width: 30px;
+    min-height: 32px;
+  }
+}

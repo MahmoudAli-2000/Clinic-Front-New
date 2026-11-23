@@ -21,20 +21,22 @@
       <h2>{{ currentUser.fullName | ui }}</h2>
       <div class="profile-fields">
         <div>
-          <small>{{ 'Email address' | ui }}</small
-          ><strong>{{ currentUser.email | ui }}</strong>
+          <small>{{ 'Email address' | ui }}</small><strong>{{ currentUser.email | ui }}</strong>
         </div>
         <div>
-          <small>{{ 'Account status' | ui }}</small
-          ><strong>{{ (currentUser.isActive ? 'Active' : 'Inactive') | ui }}</strong>
+          <small>{{ 'Account status' | ui }}</small><strong>{{
+            (currentUser.isActive ? 'Active' : 'Inactive') | ui
+          }}</strong>
         </div>
         <div>
-          <small>{{ 'Patient record' | ui }}</small
-          ><strong>{{ currentUser.patientId || 'Not linked' | ui }}</strong>
+          <small>{{ 'Patient record' | ui }}</small><strong>{{
+            currentUser.patientId || 'Not linked' | ui
+          }}</strong>
         </div>
         <div>
-          <small>{{ 'Email verification' | ui }}</small
-          ><strong>{{ (currentUser.emailConfirmed ? 'Verified' : 'Not verified') | ui }}</strong>
+          <small>{{ 'Email verification' | ui }}</small><strong>{{
+            (currentUser.emailConfirmed ? 'Verified' : 'Not verified') | ui
+          }}</strong>
         </div>
       </div>
     </div>

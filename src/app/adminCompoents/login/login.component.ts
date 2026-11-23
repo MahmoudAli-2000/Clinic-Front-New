@@ -5,7 +5,7 @@ import { AuthService } from './../../core/services/auth.service';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
 
   private readonly _router = inject(Router);
   private readonly _route = inject(ActivatedRoute);
-  private readonly toasterService = inject(ToastrService);
+  private readonly toasterService = inject(ToastService);
 
   constructor(
     private fb: FormBuilder,

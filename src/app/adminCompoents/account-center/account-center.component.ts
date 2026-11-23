@@ -1,3 +1,5 @@
+import { LanguageService } from '../../core/services/language.service';
+import { NotificationCenterService } from '../../core/services/notification-center.service';
 import { ClinicDatePipe } from '../../core/pipes/clinic-date.pipe';
 import { UiPipe } from '../../core/pipes/ui.pipe';
 import { AppearanceService, Appearance, DEFAULT_APPEARANCE } from '../../core/services/appearance.service';
@@ -18,6 +20,8 @@ import { EntityFormComponent } from '../../shared/entity-form/entity-form.compon
   styleUrl: './account-center.component.css',
 })
 export class AccountCenterComponent implements OnInit {
+  language = inject(LanguageService);
+  notificationCenter = inject(NotificationCenterService);
   api = inject(WorkspaceApiService);
   auth = inject(AuthService);
   route = inject(ActivatedRoute);
@@ -44,6 +48,9 @@ export class AccountCenterComponent implements OnInit {
   page = 1;
   total = 0;
   unreadOnly = false;
+  notificationCategory = 'all';
+  showHidden = false;
+  readonly notificationCategories = ['all', 'appointments', 'reminders', 'general'];
   modal = false;
   fields: FormField[] = [];
   value: RecordData = {};
@@ -57,6 +64,7 @@ export class AccountCenterComponent implements OnInit {
     'allowPush',
     'allowWhatsApp',
     'appointmentReminders',
+    'appointmentUpdates',
     'generalUpdates',
   ];
   async ngOnInit() {
@@ -125,10 +133,17 @@ export class AccountCenterComponent implements OnInit {
     try {
       if (this.section === 'notifications') {
         const r = await firstValueFrom(
-          this.api.get('Notifications', { pageIndex: this.page, pageSize: 10, unreadOnly: this.unreadOnly })
+          this.api.get('Notifications', {
+            pageIndex: this.page,
+            pageSize: 10,
+            unreadOnly: this.unreadOnly,
+            category: this.notificationCategory,
+            hidden: this.showHidden,
+          })
         );
         this.rows = r.data;
         this.total = r.count;
+        this.notificationCenter.refresh();
       }
       if (this.section === 'time-off')
         this.rows = this.doctorId
@@ -162,6 +177,46 @@ export class AccountCenterComponent implements OnInit {
       await firstValueFrom(
         this.api.put(row ? `Notifications/${row['id']}/read` : 'Notifications/read-all', {})
       );
+      await this.load();
+      this.notificationCenter.refresh();
+    } catch (e) {
+      this.fail(e);
+    } finally {
+      this.busy = false;
+    }
+  }
+  filterNotifications(category: string) {
+    this.notificationCategory = category;
+    this.page = 1;
+    this.load();
+  }
+  notificationIcon(row: RecordData) {
+    const type = row['notificationType'] || '';
+    return type === 'AppointmentReminder'
+      ? 'fa-clock'
+      : type.startsWith('Appointment')
+        ? 'fa-calendar-check'
+        : 'fa-bell';
+  }
+  notificationCategoryLabel(row: RecordData) {
+    const type = row['notificationType'] || '';
+    return type === 'AppointmentReminder'
+      ? 'Reminders'
+      : type.startsWith('Appointment')
+        ? 'Appointments'
+        : 'General';
+  }
+  async notificationAction(row: RecordData, action: 'hide' | 'restore' | 'delete') {
+    if (action === 'delete' && !confirm(this.language.t('Delete this notification permanently?'))) return;
+    this.busy = true;
+    this.error = '';
+    try {
+      if (action === 'delete') await firstValueFrom(this.api.delete(`Notifications/${row['id']}`));
+      else
+        await firstValueFrom(
+          this.api.put(`Notifications/${row['id']}/visibility`, null, { hidden: action === 'hide' })
+        );
+      this.notificationCenter.refresh();
       await this.load();
     } catch (e) {
       this.fail(e);

@@ -567,3 +567,33 @@ html[data-theme='dark'] .skeleton-row {
 html[dir="rtl"] body { font-family: Tahoma, Arial, sans-serif; letter-spacing:normal; }
 [dir="rtl"] .cp-table th, [dir="rtl"] .cp-table td { text-align:start; }
 input[type="email"],input[type="tel"],input[type="password"],input[type="datetime-local"],input[type="date"],input[type="time"] { direction:ltr; text-align:start; }
+
+/* Motion system: short, non-blocking feedback. Respect the visitor's motion preference. */
+@keyframes cp-page-enter {from {opacity:0;transform:translateY(12px);}to {opacity:1;transform:none;}}
+@keyframes cp-card-enter {from {opacity:0;transform:translateY(10px) scale(.985);}to {opacity:1;transform:none;}}
+@keyframes cp-bell-nudge {0%,85%,100% {transform:rotate(0);}88% {transform:rotate(12deg);}91% {transform:rotate(-10deg);}94% {transform:rotate(6deg);}}
+@media(prefers-reduced-motion:no-preference) {
+ .cp-page,.dashboard-page,.login-card,.recovery-card {animation:cp-page-enter .42s cubic-bezier(.2,.7,.2,1) both;}
+ .summary-card,.quick-card {animation:cp-card-enter .5s cubic-bezier(.2,.7,.2,1) both;}
+ .summary-card:nth-child(2),.quick-card:nth-child(2) {animation-delay:50ms;}
+ .summary-card:nth-child(3),.quick-card:nth-child(3) {animation-delay:100ms;}
+ .summary-card:nth-child(4),.quick-card:nth-child(4) {animation-delay:150ms;}
+ .cp-button,.text-button,.quick-card,.summary-card,.workspace-nav a {transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease;}
+ .cp-button:hover:not(:disabled),.quick-card:hover {transform:translateY(-2px);box-shadow:0 8px 22px #164b3414;}
+ .cp-button:active:not(:disabled) {transform:translateY(0) scale(.98);}
+ .summary-card:hover {transform:translateY(-3px);}
+ .notification-row {animation:cp-card-enter .25s ease both;}
+ .has-unread .fa-bell {animation:cp-bell-nudge 6s ease-in-out 2;}
+}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible {outline:3px solid color-mix(in srgb,var(--cp-green,#278575) 45%,transparent);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}
+
+:root {--cp-surface:#ffffff;--cp-text:#23394c;--cp-border:#e7edf1;}
+html[data-theme='dark'] {--cp-surface:#1a2c38;--cp-text:#dfebf0;--cp-border:#2b3d4d;}
+html[data-theme='dark'] .notification-hero {background:linear-gradient(125deg,#173c36,#1a2c38);border-color:#2b4944;}
+html[data-theme='dark'] .notification-filters>button.selected {background:#23443e;color:#8ad2bd;}
+html[data-theme='dark'] .category-chip {background:#25433e;color:#9dd8c6;}
+html[data-theme='dark'] .notification-icon,html[data-theme='dark'] .notification-orbit {background:#25433e;color:#8dd9c1;}
+html[data-theme='dark'] .notification-settings,html[data-theme='dark'] .notification-actions .text-button:not(.danger) {color:#8ed6bf;}
+html[data-theme='dark'] .notification-actions .danger {color:#f0988f;}
+html[data-theme='dark'] .notification-view-controls {border-color:#304652;}

@@ -61,10 +61,14 @@
         </select>
         <a
           class="header-notifications"
+          [class.has-unread]="notificationCenter.unread() > 0"
           [routerLink]="rolePrefix + '/notifications'"
           [attr.aria-label]="'Notifications' | ui"
           ><i class="fas fa-bell"></i
-        ></a>
+          ><span class="unread-badge" *ngIf="notificationCenter.unread()">{{
+            notificationCenter.unread() > 99 ? '99+' : notificationCenter.unread()
+          }}</span></a
+        >
         <div class="user-summary">
           <img
             *ngIf="currentUser?.imageCover && !photoFailed; else initialsAvatar"

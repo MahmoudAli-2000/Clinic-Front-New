@@ -15,9 +15,25 @@ function response(url,method,body){const p=new URL(url,location.origin).pathname
  if(p.endsWith('/profile/photo')){sessionStorage.setItem(photoKey(),window.__demoPhoto||'');return user();}
  if(p.endsWith('/appearance')){const key='demo-appearance-'+role;if(method==='PUT'){sessionStorage.setItem(key,body);return JSON.parse(body);}return JSON.parse(sessionStorage.getItem(key)||'null')||appearanceDefaults;}
  if(p.includes('/auth/'))return p.endsWith('/me')?user():{message:'Demo action only'};
- if(p.includes('unread-count'))return 1;
- if(p.includes('notifications/preferences'))return {allowInApp:true,allowEmail:false,allowSMS:false,allowPush:false,allowWhatsApp:false,appointmentReminders:true,generalUpdates:true};
- if(p.includes('notifications'))return {data:[{id:1,title:'Welcome to the UI preview',message:'All records are synthetic. No real clinic backend is connected.',channel:'InApp',createdAtUtc:new Date().toISOString()}],count:1};
+
+ if(p.includes('notifications/preferences')){const key='demo-notification-prefs-'+role;if(method==='PUT')sessionStorage.setItem(key,body);return JSON.parse(sessionStorage.getItem(key)||'null')||{allowInApp:true,allowEmail:false,allowSMS:false,allowPush:false,allowWhatsApp:false,appointmentReminders:true,appointmentUpdates:true,generalUpdates:true};}
+ if(p.includes('notifications')){
+  const key='demo-inbox-'+role;const now=new Date().toISOString();let rows=JSON.parse(sessionStorage.getItem(key)||'null')||[
+   {id:1,notificationType:'AppointmentConfirmed',title:'Appointment Confirmed',message:'Your demo appointment is confirmed. This is synthetic preview data.',channel:'InApp',createdAtUtc:now,readAtUtc:null,hiddenAtUtc:null},
+   {id:2,notificationType:'AppointmentReminder',title:'Appointment Reminder',message:'Demo reminder: your care team is ready for your next visit.',channel:'InApp',createdAtUtc:now,readAtUtc:null,hiddenAtUtc:null},
+   {id:3,notificationType:'GeneralUpdate',title:'Welcome to your care workspace',message:'Explore your records, choose a language and personalize your notification preferences.',channel:'InApp',createdAtUtc:now,readAtUtc:now,hiddenAtUtc:null}];
+  const id=Number(p.match(/notifications\/(\d+)/)?.[1]);const params=new URL(url,location.origin).searchParams;
+  if(method==='DELETE')rows=rows.filter(n=>n.id!==id);
+  if(p.endsWith('/visibility'))rows=rows.map(n=>n.id===id?{...n,hiddenAtUtc:params.get('hidden')==='true'?now:null}:n);
+  if(p.endsWith('/read'))rows=rows.map(n=>n.id===id?{...n,readAtUtc:now}:n);
+  if(p.endsWith('/read-all'))rows=rows.map(n=>({...n,readAtUtc:now}));
+  sessionStorage.setItem(key,JSON.stringify(rows));
+  if(p.endsWith('/unread-count'))return rows.filter(n=>!n.readAtUtc&&!n.hiddenAtUtc).length;
+  rows=rows.filter(n=>params.get('hidden')==='true'?!!n.hiddenAtUtc:!n.hiddenAtUtc);
+  const category=params.get('category')||'all';if(category==='reminders')rows=rows.filter(n=>n.notificationType==='AppointmentReminder');if(category==='appointments')rows=rows.filter(n=>n.notificationType.startsWith('Appointment')&&n.notificationType!=='AppointmentReminder');if(category==='general')rows=rows.filter(n=>!n.notificationType.startsWith('Appointment'));
+  if(params.get('unreadOnly')==='true')rows=rows.filter(n=>!n.readAtUtc);
+  return {data:rows,count:rows.length};
+ }
  if(p.includes('schedules/timeoffs'))return [];
  if(p.includes('schedules/availability'))return [{doctorClinicId:1,clinicName:clinic.clinicName,startAtUtc:new Date(Date.now()+86400000).toISOString(),endAtUtc:new Date(Date.now()+88200000).toISOString()}];
  if(p.includes('schedules/doctor'))return [{id:1,doctorClinicId:1,dayOfWeek:1,startTime:'09:00:00',endTime:'17:00:00',slotDurationMinutes:30,isActive:true}];

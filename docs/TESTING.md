@@ -39,3 +39,5 @@ Build warning: Bootstrap's unused `.form-floating` selector is skipped by CSS op
 Dependency audit details: [DEPENDENCY-AUDIT.md](DEPENDENCY-AUDIT.md). Current production dependency audit after removing unused packages: 18 findings (2 critical, 11 high, 5 moderate). Do not deploy for real patient data before reviewing these.
 
 Bilingual checkpoint: 33 browser tests pass, including locale switching, RTL width checks, public authentication translation, profile image and fallback. Backend now has 11 passing API host checks. See BILINGUAL-SETUP.md.
+
+Final notification/motion checkpoint: 36 browser tests pass. Backend has 13 passing API-host tests. See NOTIFICATIONS-AND-MOTION.md for the follow-up migration and behavior.

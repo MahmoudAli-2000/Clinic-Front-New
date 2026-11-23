@@ -1,3 +1,4 @@
+import { ToastCenterComponent } from './shared/toast-center/toast-center.component';
 import { BidiModule } from '@angular/cdk/bidi';
 import { FormsModule } from '@angular/forms';
 import { inject } from '@angular/core';
@@ -8,7 +9,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BidiModule, FormsModule],
+  imports: [ToastCenterComponent, RouterOutlet, BidiModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
