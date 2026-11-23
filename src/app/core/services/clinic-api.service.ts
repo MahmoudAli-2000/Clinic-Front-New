@@ -164,7 +164,7 @@ export interface AppointmentCreateRequest {
   doctorClinicId: number;
   scheduledStartAtUtc: string;
   scheduledEndAtUtc?: string;
-  bookingSource?: 'Admin' | 'Reception' | 'Patient' | 'Phone';
+  bookingSource?: 'Admin' | 'Receptionist' | 'Doctor' | 'Patient' | 'Phone';
   reason?: string;
   notes?: string;
 }
@@ -183,8 +183,8 @@ export interface PrescriptionCreateRequest {
   visitId: number;
   notes?: string;
   items: Array<{
-    medicationName: string;
-    dosage?: string;
+    medicationId: number;
+    dose?: string;
     frequency?: string;
     durationDays?: number;
   }>;
@@ -209,7 +209,7 @@ export interface PrescriptionListItem {
   status: string;
   issuedAtUtc: string;
   notes?: string | null;
-  items: Array<{ medicationName?: string; dosage?: string; frequency?: string; durationDays?: number }>;
+  items: Array<{ medicationName?: string; dose?: string; frequency?: string; durationDays?: number }>;
 }
 
 export interface NotificationListItem {
@@ -299,7 +299,7 @@ export class ClinicApiService {
     return this.http.put<PatientListItem>(`${this.apiUrl}/Patients/${id}`, this.toFormData(request));
   }
 
-  setPatientStatus(id: number, status: 'Active' | 'Inactive' | 'Archived'): Observable<unknown> {
+  setPatientStatus(id: number, status: 'Active' | 'Inactive' | 'Suspended' | 'Deceased'): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/Patients/${id}/status`, null, { params: { status } });
   }
 
@@ -315,7 +315,7 @@ export class ClinicApiService {
   }
 
   cancelAppointment(id: number, reason?: string): Observable<AppointmentListItem> {
-    return this.http.put<AppointmentListItem>(`${this.apiUrl}/Appointments/${id}/cancel`, { reason: reason || null });
+    return this.http.put<AppointmentListItem>(`${this.apiUrl}/Appointments/${id}/cancel`, { cancellationReason: reason || null });
   }
 
   confirmAppointment(id: number): Observable<AppointmentListItem> {
@@ -362,7 +362,7 @@ export class ClinicApiService {
     return this.http.put<StaffListItem>(`${this.apiUrl}/Staffs/${id}`, this.toFormData(request));
   }
 
-  setStaffStatus(id: number, status: 'Active' | 'Inactive' | 'Terminated'): Observable<unknown> {
+  setStaffStatus(id: number, status: 'Active' | 'Inactive' | 'Suspended' | 'Deceased'): Observable<unknown> {
     return this.http.put(`${this.apiUrl}/Staffs/${id}/status`, null, { params: { status } });
   }
 
@@ -394,7 +394,7 @@ export class ClinicApiService {
     return this.http.post<PrescriptionListItem>(`${this.apiUrl}/Prescriptions`, request);
   }
 
-  updatePrescriptionStatus(id: number, status: 'Active' | 'Dispensed' | 'Cancelled'): Observable<PrescriptionListItem> {
+  updatePrescriptionStatus(id: number, status: 'Active' | 'Completed' | 'Cancelled' | 'Expired'): Observable<PrescriptionListItem> {
     return this.http.put<PrescriptionListItem>(`${this.apiUrl}/Prescriptions/${id}/status`, null, { params: { status } });
   }
 

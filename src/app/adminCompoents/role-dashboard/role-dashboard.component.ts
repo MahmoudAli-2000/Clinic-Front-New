@@ -4,6 +4,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService, CurrentUser } from '../../core/services/auth.service';
 import { ClinicRole, getPrimaryRole } from '../../core/auth/role-access';
+import { forkJoin, of, catchError } from 'rxjs';
+import { WorkspaceApiService } from '../../core/services/workspace-api.service';
+import { RecordData } from '../../core/interfaces/workspace';
 import { ClinicApiService } from '../../core/services/clinic-api.service';
 
 interface DashboardAction {
@@ -102,10 +105,15 @@ export class RoleDashboardComponent implements OnInit {
   content = DASHBOARDS.Patient;
   isLoading = true;
   loadError = false;
-  appointmentCount = 0;
-  unreadNotifications = 0;
-  personalVisitCount = 0;
-  personalPrescriptionCount = 0;
+  appointmentCount: number | null = null;
+  upcoming:RecordData[]=[];
+  recentNotifications:RecordData[]=[];
+  today=new Date();
+  dataWarning=false;
+  private workspaceApi=inject(WorkspaceApiService);
+  unreadNotifications: number | null = null;
+  personalVisitCount: number | null = null;
+  personalPrescriptionCount: number | null = null;
 
   private readonly auth = inject(AuthService);
   private readonly api = inject(ClinicApiService);
@@ -131,38 +139,22 @@ export class RoleDashboardComponent implements OnInit {
   }
 
   private loadDashboardData(user: CurrentUser): void {
-    this.api.searchAppointments(1, 1, '', {
-      patientId: user.patientId ?? undefined,
-      doctorId: user.doctorId ?? undefined
-    }).subscribe({
-      next: (result) => this.appointmentCount = result.count,
-      error: () => this.appointmentCount = 0
+    const safe = (source:any) => source.pipe(catchError(()=>{this.dataWarning=true;return of(null);}));
+    forkJoin({
+      appointments:safe(this.api.searchAppointments(1,6,'',{patientId:user.patientId??undefined,doctorId:user.doctorId??undefined})),
+      unread:safe(this.api.getUnreadNotificationCount()),
+      notifications:safe(this.api.getNotifications(1,4)),
+      visits:user.patientId?safe(this.api.getPatientVisits(user.patientId)):of(null),
+      prescriptions:user.patientId?safe(this.api.getPatientPrescriptions(user.patientId)):user.doctorId?safe(this.api.getDoctorPrescriptions(user.doctorId)):of(null)
+    }).subscribe((result:any)=>{
+      this.appointmentCount=result.appointments?.count??null;
+      this.upcoming=result.appointments?.data??[];
+      this.unreadNotifications=result.unread;
+      this.recentNotifications=result.notifications?.data??[];
+      this.personalVisitCount=result.visits?.length??null;
+      this.personalPrescriptionCount=result.prescriptions?.length??null;
+      this.isLoading=false;
     });
-
-    this.api.getUnreadNotificationCount().subscribe({
-      next: (count) => this.unreadNotifications = count,
-      error: () => this.unreadNotifications = 0
-    });
-
-    if (user.patientId) {
-      this.api.getPatientVisits(user.patientId).subscribe({
-        next: (visits) => this.personalVisitCount = visits.length,
-        error: () => this.personalVisitCount = 0
-      });
-      this.api.getPatientPrescriptions(user.patientId).subscribe({
-        next: (prescriptions) => this.personalPrescriptionCount = prescriptions.length,
-        error: () => this.personalPrescriptionCount = 0
-      });
-    }
-
-    if (user.doctorId) {
-      this.api.getDoctorPrescriptions(user.doctorId).subscribe({
-        next: (prescriptions) => this.personalPrescriptionCount = prescriptions.length,
-        error: () => this.personalPrescriptionCount = 0
-      });
-    }
-
-    this.isLoading = false;
   }
 
   get firstName(): string {

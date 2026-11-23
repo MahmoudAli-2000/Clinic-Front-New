@@ -7,7 +7,7 @@
   </button>
 
   <aside class="workspace-sidebar" [class.open]="isMenuOpen">
-    <a class="brand" routerLink="/admin/dashboard" (click)="closeMenu()">
+    <a class="brand" [routerLink]="rolePrefix+'/dashboard'" (click)="closeMenu()">
       <span class="brand-mark"><i class="fas fa-heartbeat"></i></span>
       <span>
         <strong>CarePoint</strong>
@@ -45,6 +45,7 @@
         <strong>{{ roleLabel }} workspace</strong>
       </div>
       <div class="header-actions">
+        <a class="header-notifications" [routerLink]="rolePrefix+'/notifications'" aria-label="Notifications"><i class="fas fa-bell"></i></a>
         <div class="user-summary">
           <span class="user-avatar">{{ initials }}</span>
           <span class="user-copy">

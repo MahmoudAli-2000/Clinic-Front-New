@@ -16,6 +16,7 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   submitted = false;
+  busy = false;
   IsSccuess = false;
   showPassword = false;
   serverError = '';
@@ -33,7 +34,8 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required]
     });
 
-    this.returnUrl = this._route.snapshot.queryParams['returnUrl'] || '/admin/dashboard';
+    const returnUrl = this._route.snapshot.queryParams['returnUrl'];
+    this.returnUrl = typeof returnUrl === 'string' && /^\/(admin|patient|doctor|staff)\//.test(returnUrl) ? returnUrl : '/admin/dashboard';
   }
 
   onSubmit(): void {
@@ -45,15 +47,19 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    if(this.busy)return;
+    this.busy=true;
     const loginData = this.loginForm.value;
 
     this.authService.Login(loginData).subscribe({
       next: () => {
+        this.busy=false;
         this.IsSccuess = true;
         this.toasterService.success('Login successful!', 'Success');
         this._router.navigateByUrl(this.returnUrl);
       },
       error: (err: HttpErrorResponse) => {
+        this.busy=false;
         this.serverError = err.error?.message || 'Invalid email or password';
         this.toasterService.error(this.serverError, 'Login Failed');
       }

@@ -53,3 +53,6 @@ obj/
 *.suo
 *.userosscache
 *.sln.docstates
+
+/playwright-report/
+/test-results/

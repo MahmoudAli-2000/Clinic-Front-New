@@ -35,9 +35,9 @@ export class RegisterComponent {
       this.authService.Register(this.registrationForm.value).subscribe({
         next: () => {
           this.IsSccuess = true;
-          this.toasterService.success('Registration successful. Please sign in.', 'Success');
+          this.toasterService.success('Your account is ready.', 'Welcome');
           setTimeout(() => {
-            this.Router.navigate(['/admin/login']);
+            this.Router.navigate(['/patient/dashboard']);
           }, 1300);
           this.Isloading = false;
         },

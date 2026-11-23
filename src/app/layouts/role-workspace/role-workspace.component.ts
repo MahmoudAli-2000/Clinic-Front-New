@@ -3,7 +3,7 @@ import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { CurrentUser, AuthService } from '../../core/services/auth.service';
-import { getPrimaryRole, ROLE_NAVIGATION } from '../../core/auth/role-access';
+import { getPrimaryRole, ROLE_NAVIGATION, RoleNavigationItem } from '../../core/auth/role-access';
 
 @Component({
   selector: 'app-role-workspace',
@@ -16,6 +16,7 @@ export class RoleWorkspaceComponent implements OnInit {
   currentUser: CurrentUser | null = null;
   isMenuOpen = false;
   readonly navigation = ROLE_NAVIGATION;
+  visibleNavigation:RoleNavigationItem[]=[];
 
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -27,7 +28,12 @@ export class RoleWorkspaceComponent implements OnInit {
       return;
     }
     this.auth.currentUser().subscribe({
-      next: (user) => this.currentUser = user,
+      next: (user) => {
+        this.currentUser = user;
+        const prefix = this.rolePrefix;
+        this.visibleNavigation=this.navigation.filter(item=>item.roles.some(role=>user.roles.includes(role))).map(item=>({...item,path:item.path.replace('/admin',prefix)}));
+        if(this.router.url.startsWith('/admin/') && prefix !== '/admin') this.router.navigateByUrl(this.router.url.replace('/admin/',prefix+'/'));
+      },
       error: () => {
         this.currentUser = null;
         this.router.navigate(['/admin/login']);
@@ -35,6 +41,10 @@ export class RoleWorkspaceComponent implements OnInit {
     });
   }
 
+  get rolePrefix():string {
+    const role=getPrimaryRole(this.currentUser?.roles);
+    return role==='Patient'?'/patient':role==='Doctor'?'/doctor':role==='Nurse'||role==='Receptionist'?'/staff':'/admin';
+  }
   get roleLabel(): string {
     return getPrimaryRole(this.currentUser?.roles) ?? 'Clinic user';
   }
@@ -46,13 +56,6 @@ export class RoleWorkspaceComponent implements OnInit {
       .slice(0, 2)
       .map((part) => part.charAt(0).toUpperCase())
       .join('');
-  }
-
-  get visibleNavigation() {
-    const roles = this.currentUser?.roles ?? [];
-    return this.navigation.filter((item) => item.roles.some((role) =>
-      roles.some((userRole) => userRole.toLowerCase() === role.toLowerCase())
-    ));
   }
 
   closeMenu(): void {
